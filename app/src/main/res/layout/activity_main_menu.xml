@@ -36,7 +36,7 @@
             android:layout_margin="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="20dp"
             android:onClick="onSimpleGame"
             android:text="@string/new_game" />
         <Button
@@ -44,7 +44,7 @@
             android:layout_margin="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="20dp"
             android:onClick="onMultiplayerGame"
             android:text="@string/new_game_two_players"/>
         <Button
@@ -52,7 +52,7 @@
             android:layout_margin="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="20dp"
             android:onClick="onEditProfile"
             android:text="@string/profile"/>
     </LinearLayout>
