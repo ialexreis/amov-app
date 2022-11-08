@@ -1,4 +1,4 @@
-package com.alex.amov_app
+package pt.isec.agileMath
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

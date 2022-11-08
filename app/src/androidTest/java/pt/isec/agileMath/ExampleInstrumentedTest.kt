@@ -1,4 +1,4 @@
-package com.alex.amov_app
+package pt.isec.agileMath
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -1,7 +1,8 @@
-package com.alex.amov_app
+package pt.isec.agileMath
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.alex.amov_app.R
 
 class EditProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.alex.amov_app
+package pt.isec.agileMath
 
 import org.junit.Test
 
