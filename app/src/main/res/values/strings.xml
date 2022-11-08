@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Amov-app</string>
+    <string name="app_name">AgileMath</string>
+    <string name="new_game">Single Player</string>
+    <string name="new_game_two_players">Multiplayer</string>
+    <string name="profile">Player Profile</string>
 </resources>

@@ -1,6 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainMenuActivity">
 
-</LinearLayout>
+    <TextView
+        android:layout_marginTop="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:layout_gravity="top|center"
+        android:textSize="55sp"
+        android:textStyle="italic|bold"
+        />
+
+    <ImageView
+        android:layout_marginTop="200sp"
+        android:layout_width="250sp"
+        android:layout_height="250sp"
+        android:background="@drawable/front_image"
+        android:layout_gravity="top|center"
+        tools:ignore="ContentDescription" />
+
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="30dp"
+        android:paddingHorizontal="42dp">
+        <Button
+            android:id="@+id/btnSolidColor"
+            android:layout_margin="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:onClick="onSimpleGame"
+            android:text="@string/new_game" />
+        <Button
+            android:id="@+id/btnGallery"
+            android:layout_margin="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:onClick="onMultiplayerGame"
+            android:text="@string/new_game_two_players"/>
+        <Button
+            android:id="@+id/btnPhoto"
+            android:layout_margin="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:onClick="onEditProfile"
+            android:text="@string/profile"/>
+    </LinearLayout>
+</FrameLayout>
+
