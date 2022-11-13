@@ -32,7 +32,7 @@
         android:paddingVertical="30dp"
         android:paddingHorizontal="42dp">
         <Button
-            android:id="@+id/btnSolidColor"
+            android:id="@+id/btnSinglePlayer"
             android:layout_margin="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             android:onClick="onSimpleGame"
             android:text="@string/new_game" />
         <Button
-            android:id="@+id/btnGallery"
+            android:id="@+id/btnMultiplayer"
             android:layout_margin="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             android:onClick="onMultiplayerGame"
             android:text="@string/new_game_two_players"/>
         <Button
-            android:id="@+id/btnPhoto"
+            android:id="@+id/btnEditProfile"
             android:layout_margin="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

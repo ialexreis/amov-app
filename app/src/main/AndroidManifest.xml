@@ -22,6 +22,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AgileMath"
         tools:targetApi="31">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="pt.isec.agileMath.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/fileprovider" />
+        </provider>
+
         <activity
             android:name="pt.isec.agileMath.EditProfileActivity"
             android:exported="false">
