@@ -1,6 +1,5 @@
-package pt.isec.agileMath
+package pt.isec.agileMath.activities
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.alex.amov_app.databinding.ActivityMainMenuBinding

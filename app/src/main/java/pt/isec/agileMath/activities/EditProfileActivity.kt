@@ -1,4 +1,4 @@
-package pt.isec.agileMath
+package pt.isec.agileMath.activities
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.FileProvider
 import com.alex.amov_app.databinding.ActivityEditProfileBinding
@@ -45,7 +44,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     fun openActivityForResult() {
-        resultLauncher.launch(Companion.getIntent(this))
+        resultLauncher.launch(getIntent(this))
     }
 
     @SuppressLint("QueryPermissionsNeeded")
