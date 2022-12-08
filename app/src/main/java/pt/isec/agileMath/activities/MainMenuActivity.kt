@@ -1,8 +1,10 @@
 package pt.isec.agileMath.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.alex.amov_app.databinding.ActivityMainMenuBinding
+import pt.isec.agileMath.models.Board
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -16,6 +18,9 @@ class MainMenuActivity : AppCompatActivity() {
         binding.btnSinglePlayer.setOnClickListener { onSinglePlayer() }
         binding.btnMultiplayer.setOnClickListener { onMultiplayer() }
         binding.btnEditProfile.setOnClickListener { onEditProfile() }
+
+        val board = Board(100, arrayOf("+", "-", "*", "/"))
+        Log.e("INFO", board.toString())
     }
 
     fun onEditProfile() = startActivity(EditProfileActivity.getIntent(this))

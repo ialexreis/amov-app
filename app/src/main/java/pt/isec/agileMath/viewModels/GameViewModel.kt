@@ -3,6 +3,6 @@ package pt.isec.agileMath.viewModels
 import androidx.lifecycle.ViewModel
 
 
-class gameViewModel(private val isSinglePlayer: Boolean) : ViewModel() {
+class GameViewModel(private val isSinglePlayer: Boolean) : ViewModel() {
 
 }
