@@ -4,6 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pt.isec.agileMath.activities.GameActivity">
+    tools:context=".activities.GameActivity">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentScores"
+        android:name="pt.isec.agileMath.fragments.ScoreFragment"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_gravity="top"
+        android:layout_marginHorizontal="20dp"
+        tools:ignore="MissingConstraints"
+        tools:layout="@layout/fragment_score" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

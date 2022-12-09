@@ -24,6 +24,6 @@ class MainMenuActivity : AppCompatActivity() {
     }
 
     fun onEditProfile() = startActivity(EditProfileActivity.getIntent(this))
-    fun onSinglePlayer() {}
+    fun onSinglePlayer() = startActivity(GameActivity.getIntent(this))
     fun onMultiplayer() {}
 }

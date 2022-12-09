@@ -11,9 +11,9 @@
         android:name="pt.isec.agileMath.fragments.ScoreFragment"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_marginHorizontal="20dp"
-        tools:layout="@layout/fragment_score"
         android:layout_gravity="top"
-        tools:ignore="MissingConstraints" />
+        android:layout_marginHorizontal="20dp"
+        tools:ignore="MissingConstraints"
+        tools:layout="@layout/fragment_score" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
