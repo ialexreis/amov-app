@@ -3,7 +3,7 @@ package pt.isec.agileMath.activities
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.alex.amov_app.databinding.ActivityMainMenuBinding
+import pt.isec.agileMath.databinding.ActivityMainMenuBinding
 import pt.isec.agileMath.models.Board
 
 class MainMenuActivity : AppCompatActivity() {

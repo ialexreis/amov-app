@@ -12,7 +12,7 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.FileProvider
-import com.alex.amov_app.databinding.ActivityEditProfileBinding
+import pt.isec.agileMath.databinding.ActivityEditProfileBinding
 import java.io.File
 
 class EditProfileActivity : AppCompatActivity() {

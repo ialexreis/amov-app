@@ -22,6 +22,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AgileMath"
         tools:targetApi="31">
+        <activity
+            android:name=".GameActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -34,14 +41,14 @@
         </provider>
 
         <activity
-            android:name="pt.isec.agileMath.activities.EditProfileActivity"
+            android:name=".activities.EditProfileActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="pt.isec.agileMath.activities.MainMenuActivity"
+            android:name=".activities.MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

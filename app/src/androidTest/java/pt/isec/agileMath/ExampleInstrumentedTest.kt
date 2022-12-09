@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.alex.amov_app", appContext.packageName)
+        assertEquals("pt.isec.agileMath", appContext.packageName)
     }
 }
