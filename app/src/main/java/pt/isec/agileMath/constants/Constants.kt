@@ -2,12 +2,14 @@ package pt.isec.agileMath.constants
 
 class Constants {
     enum class BOARD_POSITION {
-        LINE_LEFT,
-        LINE_CENTER,
-        LINE_RIGHT,
-        COLUMN_TOP,
-        COLUMN_MIDDLE,
-        COLUMN_BOTTOM,
+        COLUMN_LEFT,
+        COLUMN_CENTER,
+        COLUMN_RIGHT,
+
+        LINE_TOP,
+        LINE_MIDDLE,
+        LINE_BOTTOM,
+
         NONE
     }
 

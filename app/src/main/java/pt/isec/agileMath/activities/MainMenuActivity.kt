@@ -19,7 +19,7 @@ class MainMenuActivity : AppCompatActivity() {
         binding.btnMultiplayer.setOnClickListener { onMultiplayer() }
         binding.btnEditProfile.setOnClickListener { onEditProfile() }
 
-        val board = Board(100, arrayOf("+", "-", "*", "/"))
+        val board = Board(10, arrayOf("+", "-", "*", "/"))
         Log.e("INFO", board.toString())
     }
 
