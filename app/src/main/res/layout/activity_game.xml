@@ -23,6 +23,6 @@
         android:layout_height="400sp"
         android:layout_gravity="center"
         android:layout_marginTop="100sp"
-        android:background="@drawable/square"
+        android:background="@drawable/board"
         android:numColumns="5" />
 </LinearLayout>

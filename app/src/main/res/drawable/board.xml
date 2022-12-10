@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:left="6dp"
+        android:right="6dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="3dp"
+                android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:left="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:left="160dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:left="240dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:left="320dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+
+    <item
+        android:top="80dp"
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="160dp"
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="240dp"
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="320dp"
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="400dp"
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+
+
+
+    <item
+        android:top="80dp"
+        android:left="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="160dp"
+        android:left="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="240dp"
+        android:left="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="320dp"
+        android:left="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="400dp"
+        android:left="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="80dp"
+        android:left="160dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="160dp"
+        android:left="160dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="240dp"
+        android:left="160dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="320dp"
+        android:left="160dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="400dp"
+        android:left="160dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+
+
+    <item
+        android:top="80dp"
+        android:left="240dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="160dp"
+        android:left="240dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="240dp"
+        android:left="240dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="320dp"
+        android:left="240dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="400dp"
+        android:left="240dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+
+    <item
+        android:top="80dp"
+        android:left="320dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="160dp"
+        android:left="320dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="240dp"
+        android:left="320dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+    <item
+        android:top="320dp"
+        android:left="320dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#994700" />
+        </shape>
+    </item>
+    <item
+        android:top="400dp"
+        android:left="320dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8E5AC" />
+        </shape>
+    </item>
+
+</layer-list>

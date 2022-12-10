@@ -3,6 +3,7 @@ package pt.isec.agileMath.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -55,10 +56,9 @@ class GameActivity : AppCompatActivity() {
                 val textView = convertView ?: TextView(this@GameActivity).apply {
                     text = _matrix[index]
                     gravity = 1
-                    setTextColor(R.color.md_theme_light_primary)
-                    textSize = 40F
+                    setTextColor(Color.parseColor("#000000"))
+                    textSize = 60F
                 }
-
                 return textView
             }
         }
