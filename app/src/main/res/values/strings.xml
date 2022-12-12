@@ -13,4 +13,6 @@
     <string name="score">Score</string>
     <string name="highscore">Highscore</string>
     <string name="_00000">00000</string>
+    <string name="time">Time</string>
+    <string name="_00">00</string>
 </resources>
