@@ -6,61 +6,38 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.GestureDetector
+import android.view.GestureDetector.OnGestureListener
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.GridView
 import android.widget.TextView
+import androidx.activity.viewModels
 import pt.isec.agileMath.R
 import pt.isec.agileMath.databinding.ActivityGameBinding
+import pt.isec.agileMath.viewModels.SinglePlayerViewModel
+import pt.isec.agileMath.views.BoardGridView
 
 class GameActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityGameBinding
-
-    public val _matrix = arrayOf(
-        "2", "+", "6", "*", "7",
-        "+", "6", "*", "7", "/",
-        "2", "+", "6", "*", "9",
-        "+", "6", "*", "7", "/",
-        "0", "+", "6", "*", "10"
-    )
-
     companion object {
         fun getIntent(ctx: Context): Intent {
             return Intent(ctx, GameActivity::class.java)
         }
     }
 
+    private lateinit var binding: ActivityGameBinding
+    private val singlePlayerViewModel: SinglePlayerViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
+
+        singlePlayerViewModel.activityBinding = binding
+
         setContentView(binding.root)
 
-        val grid: GridView? = binding.gamematrix
-        grid!!.adapter = object : BaseAdapter() {
-            override fun getCount(): Int = _matrix.size
-
-            override fun getItem(index: Int): String = _matrix[index]
-
-            override fun getItemId(index: Int): Long {
-                return _matrix[index].length.toLong()
-            }
-
-            @SuppressLint("ResourceAsColor")
-            override fun getView(
-                index: Int,
-                convertView: View?,
-                parent: ViewGroup?
-            ): View {
-                val textView = convertView ?: TextView(this@GameActivity).apply {
-                    text = _matrix[index]
-                    gravity = 1
-                    setTextColor(Color.parseColor("#000000"))
-                    textSize = 60F
-                }
-                return textView
-            }
-        }
+        binding.frGameMatrix?.addView(BoardGridView(this, singlePlayerViewModel.vector))
     }
 }

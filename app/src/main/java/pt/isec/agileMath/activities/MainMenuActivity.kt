@@ -19,8 +19,6 @@ class MainMenuActivity : AppCompatActivity() {
         binding.btnMultiplayer.setOnClickListener { onMultiplayer() }
         binding.btnEditProfile.setOnClickListener { onEditProfile() }
 
-        val board = Board(10, arrayOf("+", "-", "*", "/"))
-        Log.e("INFO", board.toString())
     }
 
     fun onEditProfile() = startActivity(EditProfileActivity.getIntent(this))

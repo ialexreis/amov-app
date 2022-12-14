@@ -17,12 +17,24 @@
         tools:ignore="MissingConstraints"
         tools:layout="@layout/fragment_score" />
 
-    <GridView
-        android:id="@+id/gamematrix"
+    <FrameLayout
+        android:id="@+id/frGameMatrix"
         android:layout_width="400sp"
         android:layout_height="400sp"
         android:layout_gravity="center"
         android:layout_marginTop="100sp"
-        android:background="@drawable/board"
-        android:numColumns="5" />
+        android:background="@drawable/board">
+
+    </FrameLayout>
+
+    <!--
+        <GridView
+            android:id="@+id/gamematrix"
+            android:layout_width="400sp"
+            android:layout_height="400sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="100sp"
+            android:background="@drawable/board"
+            android:numColumns="5" />
+     -->
 </LinearLayout>

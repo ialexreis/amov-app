@@ -14,21 +14,22 @@ data class Game(
     var successTime: Int = 3,
     var totalPoints: Int = 0
 ){
-    var operators = arrayOf("+", "-", "*", "/")
-        private set
-        get() {
-            if (level > operators.size) {
-                return operators.copyOfRange(0, operators.size)
-            }
+    var operatorsToUse = arrayOf("+", "-", "*", "/")
 
-            return operators.copyOfRange(0, level)
+    var operators = operatorsToUse.copyOf()
+        get() {
+            if (level > 4) {
+                return operatorsToUse.copyOfRange(0, operators.size)
+            }
+            return operatorsToUse.copyOfRange(0, level)
         }
 
-    var board: Board = Board(maxBaseValue, operators)
+    var board: Board
         private set
 
     init {
-
+        operators
+        board = Board(maxBaseValue, operators)
     }
 
     fun nextLevel() {

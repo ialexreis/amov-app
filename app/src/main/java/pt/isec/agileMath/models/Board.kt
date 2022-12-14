@@ -8,6 +8,10 @@ data class Board(
     private val operators: Array<String>,
     ) {
 
+    val matrix: MutableList<MutableList<String>> = MutableList(Constants.BOARD_LINES){
+        MutableList(Constants.BOARD_LINES){""}
+    }
+
     var operationMaxValue = 0.0f
         private set
     var maxValueBoardPosition = Constants.BOARD_POSITION.NONE
@@ -18,10 +22,6 @@ data class Board(
     var secondMaxValueBoardPosition = Constants.BOARD_POSITION.NONE
         private set
 
-    var matrix: MutableList<MutableList<String>> = MutableList(Constants.BOARD_LINES){
-        MutableList(Constants.BOARD_LINES){""}
-    }
-        private set
 
     init {
         fillCells()
