@@ -7,34 +7,18 @@
     android:orientation="vertical"
     tools:context="pt.isec.agileMath.activities.GameActivity">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentScores"
-        android:name="pt.isec.agileMath.fragments.ScoreFragment"
+    <FrameLayout
+        android:id="@+id/frScore"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_gravity="top"
-        android:layout_marginHorizontal="20dp"
-        tools:ignore="MissingConstraints"
-        tools:layout="@layout/fragment_score" />
+        android:layout_marginHorizontal="20dp" />
 
     <FrameLayout
         android:id="@+id/frGameMatrix"
-        android:layout_width="400sp"
-        android:layout_height="400sp"
+        android:layout_width="350sp"
+        android:layout_height="350sp"
         android:layout_gravity="center"
-        android:layout_marginTop="100sp"
-        android:background="@drawable/board">
-
+        android:layout_marginTop="150sp">
     </FrameLayout>
-
-    <!--
-        <GridView
-            android:id="@+id/gamematrix"
-            android:layout_width="400sp"
-            android:layout_height="400sp"
-            android:layout_gravity="center"
-            android:layout_marginTop="100sp"
-            android:background="@drawable/board"
-            android:numColumns="5" />
-     -->
 </LinearLayout>

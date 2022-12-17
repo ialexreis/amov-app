@@ -1,23 +1,16 @@
 package pt.isec.agileMath.activities
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.GestureDetector
-import android.view.GestureDetector.OnGestureListener
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.TextView
 import androidx.activity.viewModels
-import pt.isec.agileMath.R
+import androidx.lifecycle.Observer
+import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.databinding.ActivityGameBinding
-import pt.isec.agileMath.viewModels.SinglePlayerViewModel
+import pt.isec.agileMath.databinding.FragmentScoreBinding
+import pt.isec.agileMath.viewModels.gameViewModel.SinglePlayerViewModel
 import pt.isec.agileMath.views.BoardGridView
 
 class GameActivity : AppCompatActivity() {
@@ -28,16 +21,41 @@ class GameActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityGameBinding
+    private lateinit var fragmentScoreBinding: FragmentScoreBinding
     private val singlePlayerViewModel: SinglePlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
-
-        singlePlayerViewModel.activityBinding = binding
-
+        fragmentScoreBinding = FragmentScoreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.frGameMatrix?.addView(BoardGridView(this, singlePlayerViewModel.vector))
+        singlePlayerViewModel.activityBinding = binding
+        singlePlayerViewModel.fragmentScoreBinding = fragmentScoreBinding
+
+        binding.frScore?.addView(fragmentScoreBinding.root)
+        binding.frGameMatrix?.addView(BoardGridView(this, singlePlayerViewModel))
+
+        singlePlayerViewModel.gameStateObserver.observe(this) {
+            onGameStateChange(it)
+        }
+
+        singlePlayerViewModel.startGame()
+    }
+
+
+    private fun onGameStateChange(state: GameState) {
+        Log.d("onGameStateChange", state.toString())
+
+        when(state) {
+            GameState.START -> {}
+            GameState.START -> {}
+            GameState.START -> {}
+            GameState.START -> {}
+            else -> {}
+        }
+
+        fragmentScoreBinding?.score?.text = singlePlayerViewModel.game.totalPoints.toString()
+        fragmentScoreBinding?.timeleft?.text = singlePlayerViewModel.game.timer.toString()
     }
 }
