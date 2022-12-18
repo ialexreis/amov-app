@@ -20,8 +20,7 @@ abstract class GameViewModel: ViewModel() {
     private lateinit var timerCoroutine: Job
 
     private val gameState = MutableLiveData<GameState>()
-    val gameStateObserver: LiveData<GameState>
-        get() = gameState
+    var gameStateObserver: LiveData<GameState> = gameState
 
     var game: Game = Game()
         protected set
@@ -45,22 +44,29 @@ abstract class GameViewModel: ViewModel() {
         timerCoroutine?.cancel()
     }
 
+    fun setGameState(gameState: GameState) {
+        synchronized(gameStateObserver) {
+            this.gameState.value = gameState
+        }
+    }
+
     fun startGame() {
-        gameState.value = GameState.START
+        setGameState(GameState.START)
         timerCoroutine = viewModelScope.launch { gameClockRoutine() }
     }
 
     abstract fun executeMove(positionFromTouch: Constants.BOARD_POSITION)
 
+
     private suspend fun gameClockRoutine() {
         while (game.timer > 0) {
-            gameState.value = GameState.CLOCK_TICK
+            setGameState(GameState.CLOCK_TICK)
 
             game.clockTick()
 
             delay(1000)
         }
 
-        gameState.value = GameState.GAME_OVER_TIME_OUT
+        setGameState(GameState.GAME_OVER_TIME_OUT)
     }
 }

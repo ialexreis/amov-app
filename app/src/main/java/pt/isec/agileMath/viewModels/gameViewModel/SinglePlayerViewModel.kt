@@ -1,10 +1,12 @@
 package pt.isec.agileMath.viewModels.gameViewModel
 
 import pt.isec.agileMath.constants.Constants
+import pt.isec.agileMath.constants.GameState
 
 class SinglePlayerViewModel: GameViewModel() {
     override fun executeMove(positionFromTouch: Constants.BOARD_POSITION) {
-        game.executeMove(positionFromTouch)
+        val gameState = game.executeMove(positionFromTouch)
 
+        setGameState(gameState)
     }
 }

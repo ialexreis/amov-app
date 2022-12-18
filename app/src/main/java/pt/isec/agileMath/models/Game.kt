@@ -1,6 +1,7 @@
 package pt.isec.agileMath.models
 
 import pt.isec.agileMath.constants.Constants
+import pt.isec.agileMath.constants.GameState
 
 data class Game(
     var isRunning: Boolean = false,
@@ -36,7 +37,33 @@ data class Game(
         board = Board(maxBaseValue, operators)
     }
 
-    fun nextLevel() {
+    fun executeMove(positionFromTouch: Constants.BOARD_POSITION): GameState {
+        var gameState = when(positionFromTouch) {
+            board.maxValueBoardPosition -> onCorrectOperation(successOperationMaxValue)
+            board.secondMaxValueBoardPosition -> onCorrectOperation(successOperationSecondMaxValue)
+            else -> GameState.FAILED_EXPRESSION
+        }
+
+        if (gameState == GameState.FAILED_EXPRESSION) {
+            return gameState
+        }
+
+        if (successExpressionsCounter == successExpressionsToNextLevel) {
+            nextLevel()
+            return GameState.LEVEL_COMPLETED
+        }
+
+        buildBoard()
+        return gameState
+    }
+
+    fun clockTick() {
+        synchronized(timer) {
+            timer--
+        }
+    }
+
+    private fun nextLevel() {
         level += 1
         maxBaseValue *= level
         successExpressionsToNextLevel *= level
@@ -47,26 +74,15 @@ data class Game(
         buildBoard()
     }
 
-    fun executeMove(positionFromTouch: Constants.BOARD_POSITION) {
-        when(positionFromTouch) {
-            board.maxValueBoardPosition -> onCorrectOperation(successOperationMaxValue)
-            board.secondMaxValueBoardPosition -> onCorrectOperation(successOperationSecondMaxValue)
-            else -> {}
-        }
-    }
-
-    fun clockTick() {
-        synchronized(timer) {
-            timer--
-        }
-    }
-
-    private fun onCorrectOperation(pointsToIncrement: Int) {
+    private fun onCorrectOperation(pointsToIncrement: Int): GameState {
         totalPoints += pointsToIncrement
+        successExpressionsCounter++
 
         synchronized(timer) {
             timer += successTime
         }
+
+        return GameState.CORRECT_EXPRESSION
     }
 
 

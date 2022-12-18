@@ -19,10 +19,11 @@ class GameActivity : AppCompatActivity() {
             return Intent(ctx, GameActivity::class.java)
         }
     }
+    private val singlePlayerViewModel: SinglePlayerViewModel by viewModels()
 
     private lateinit var binding: ActivityGameBinding
     private lateinit var fragmentScoreBinding: FragmentScoreBinding
-    private val singlePlayerViewModel: SinglePlayerViewModel by viewModels()
+    private lateinit var boardGridView: BoardGridView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,11 +31,13 @@ class GameActivity : AppCompatActivity() {
         fragmentScoreBinding = FragmentScoreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        boardGridView = BoardGridView(this, singlePlayerViewModel)
+
         singlePlayerViewModel.activityBinding = binding
         singlePlayerViewModel.fragmentScoreBinding = fragmentScoreBinding
 
         binding.frScore?.addView(fragmentScoreBinding.root)
-        binding.frGameMatrix?.addView(BoardGridView(this, singlePlayerViewModel))
+        binding.frGameMatrix?.addView(boardGridView)
 
         singlePlayerViewModel.gameStateObserver.observe(this) {
             onGameStateChange(it)
@@ -45,13 +48,11 @@ class GameActivity : AppCompatActivity() {
 
 
     private fun onGameStateChange(state: GameState) {
-        Log.d("onGameStateChange", state.toString())
-
         when(state) {
             GameState.START -> {}
             GameState.START -> {}
             GameState.START -> {}
-            GameState.START -> {}
+            GameState.CORRECT_EXPRESSION, GameState.LEVEL_COMPLETED -> boardGridView.buildBoard()
             else -> {}
         }
 

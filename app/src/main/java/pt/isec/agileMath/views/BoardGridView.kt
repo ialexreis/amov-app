@@ -6,8 +6,10 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import android.view.GestureDetector
 import android.view.GestureDetector.OnGestureListener
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,7 @@ import android.widget.BaseAdapter
 import android.widget.GridView
 import android.widget.TextView
 import pt.isec.agileMath.constants.Constants
+import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.viewModels.gameViewModel.GameViewModel
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -44,9 +47,13 @@ class BoardGridView @JvmOverloads constructor(
 
     constructor(context: Context, viewModel: GameViewModel): this(context) {
         this.viewModel = viewModel
-        this.boardVector = viewModel.vector
-        this.numColumns = 5
 
+        buildBoard()
+    }
+
+    fun buildBoard() {
+        this.numColumns = 5
+        this.boardVector = viewModel.vector
         this.adapter = getGridViewAdapter()
     }
 
@@ -63,9 +70,7 @@ class BoardGridView @JvmOverloads constructor(
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
         if (ev?.action == MotionEvent.ACTION_UP) {
             val swipePosition = getBoardPositionFromSwipe()
-
             viewModel.executeMove(swipePosition)
-
             return true
         }
 
@@ -145,7 +150,10 @@ class BoardGridView @JvmOverloads constructor(
         return ceil(position / gridCellSize).toInt() - 1
     }
 
+
     private fun getGridViewAdapter(): BaseAdapter {
+        val cellSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70f, resources.displayMetrics).toInt()
+
         return object : BaseAdapter() {
             override fun getCount(): Int = boardVector.size
 
@@ -170,7 +178,11 @@ class BoardGridView @JvmOverloads constructor(
                     gravity = 1
                     setTextColor(Color.parseColor("#000000"))
                     setBackgroundColor(Color.parseColor(backgroundColor))
-                    textSize = 50F
+                    textSize = 25F
+                    width = cellSize
+                    height = cellSize
+                    textAlignment = TEXT_ALIGNMENT_CENTER
+                    gravity = Gravity.CENTER_VERTICAL
                 }
 
                 return boardTextViews[index]

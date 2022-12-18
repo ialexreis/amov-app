@@ -1,5 +1,6 @@
 package pt.isec.agileMath.models
 
+import android.util.Log
 import pt.isec.agileMath.constants.Constants
 import kotlin.random.Random
 
@@ -25,6 +26,7 @@ data class Board(
 
     init {
         fillCells()
+        Log.d("getOperationsMaxResultFromColumns", "$maxValueBoardPosition $secondMaxValueBoardPosition")
     }
 
     private fun fillCells() {

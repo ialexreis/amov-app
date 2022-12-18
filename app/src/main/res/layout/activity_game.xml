@@ -19,6 +19,6 @@
         android:layout_width="350sp"
         android:layout_height="350sp"
         android:layout_gravity="center"
-        android:layout_marginTop="150sp">
-    </FrameLayout>
+        android:layout_marginTop="150sp"
+        android:textAlignment="center"></FrameLayout>
 </LinearLayout>
