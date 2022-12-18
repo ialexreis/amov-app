@@ -50,8 +50,6 @@ class GameActivity : AppCompatActivity() {
     private fun onGameStateChange(state: GameState) {
         when(state) {
             GameState.START -> {}
-            GameState.START -> {}
-            GameState.START -> {}
             GameState.CORRECT_EXPRESSION, GameState.LEVEL_COMPLETED -> boardGridView.buildBoard()
             else -> {}
         }
