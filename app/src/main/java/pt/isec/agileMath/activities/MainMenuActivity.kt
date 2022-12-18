@@ -2,6 +2,7 @@ package pt.isec.agileMath.activities
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Display.Mode
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.agileMath.databinding.ActivityMainMenuBinding
 import pt.isec.agileMath.models.Board
@@ -23,5 +24,5 @@ class MainMenuActivity : AppCompatActivity() {
 
     fun onEditProfile() = startActivity(EditProfileActivity.getIntent(this))
     fun onSinglePlayer() = startActivity(GameActivity.getIntent(this))
-    fun onMultiplayer() {}
+    fun onMultiplayer() = startActivity(ModeActivity.getIntent(this))
 }
