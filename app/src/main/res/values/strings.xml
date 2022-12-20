@@ -11,7 +11,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="score">Score</string>
-    <string name="highscore">Highscore</string>
+    <string name="level">Level</string>
     <string name="_00000">00000</string>
     <string name="time">Time</string>
     <string name="_00">00</string>
@@ -22,4 +22,8 @@
     <string name="error_address">Invalid ip address</string>
     <string name="button_connect">Connect</string>
     <string name="ask_ip">Insert Ip</string>
+
+    <string name="fr_level_transition_level">Level</string>
+    <string name="fr_level_transition_starting_in">Starting in</string>
+    <string name="fr_level_transition_btn_pause">Pause</string>
 </resources>

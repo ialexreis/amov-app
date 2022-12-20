@@ -9,4 +9,7 @@ class MultiplayerPlayerViewModel: GameViewModel() {
 
         setGameState(gameState)
     }
+
+    override suspend fun nextLevelCountdownRoutine() {
+    }
 }

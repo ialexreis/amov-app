@@ -1,5 +1,8 @@
 package pt.isec.agileMath.viewModels.gameViewModel
 
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
 
@@ -8,5 +11,16 @@ class SinglePlayerViewModel: GameViewModel() {
         val gameState = game.executeMove(positionFromTouch)
 
         setGameState(gameState)
+    }
+
+    override suspend fun nextLevelCountdownRoutine() {
+        while (countdownToInitNextLevel > 0) {
+            delay(1000)
+            countdownToInitNextLevel--
+
+            setGameState(GameState.NEW_LEVEL_COUNTDOWN_TICK)
+        }
+
+        setGameState(GameState.NEW_LEVEL_STARTED)
     }
 }

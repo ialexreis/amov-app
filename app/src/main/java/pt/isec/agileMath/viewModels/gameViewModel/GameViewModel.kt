@@ -22,6 +22,9 @@ abstract class GameViewModel: ViewModel() {
     private val gameState = MutableLiveData<GameState>()
     var gameStateObserver: LiveData<GameState> = gameState
 
+    var countdownToInitNextLevel = 5
+    var isCountdownPaused = false
+
     var game: Game = Game()
         protected set
 
@@ -51,20 +54,31 @@ abstract class GameViewModel: ViewModel() {
     }
 
     fun startGame() {
-        setGameState(GameState.START)
+        setGameState(GameState.START_NEW_GAME)
+        timerCoroutine = viewModelScope.launch { gameClockRoutine() }
+    }
+
+    fun initCountdownToNextLevel() {
+        timerCoroutine?.cancel()
+        viewModelScope.launch { nextLevelCountdownRoutine() }
+    }
+
+    fun startNewLevel() {
+        countdownToInitNextLevel = 5
         timerCoroutine = viewModelScope.launch { gameClockRoutine() }
     }
 
     abstract fun executeMove(positionFromTouch: Constants.BOARD_POSITION)
 
+    abstract suspend fun nextLevelCountdownRoutine();
 
     private suspend fun gameClockRoutine() {
         while (game.timer > 0) {
+            delay(1000)
+
             setGameState(GameState.CLOCK_TICK)
 
             game.clockTick()
-
-            delay(1000)
         }
 
         setGameState(GameState.GAME_OVER_TIME_OUT)
