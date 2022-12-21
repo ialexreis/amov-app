@@ -48,10 +48,10 @@ class BoardGridView @JvmOverloads constructor(
     constructor(context: Context, viewModel: GameViewModel): this(context) {
         this.viewModel = viewModel
 
-        buildBoard()
+        refreshBoard()
     }
 
-    fun buildBoard() {
+    fun refreshBoard() {
         this.numColumns = 5
         this.boardVector = viewModel.vector
         this.adapter = getGridViewAdapter()
@@ -92,7 +92,6 @@ class BoardGridView @JvmOverloads constructor(
     }
 
     override fun onSingleTapUp(e: MotionEvent): Boolean {
-        Log.d("onSingleTapUp", "onSingleTapUp")
         return false
     }
 

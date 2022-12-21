@@ -1,11 +1,15 @@
 package pt.isec.agileMath.viewModels.gameViewModel
 
-import android.util.Log
 import kotlinx.coroutines.delay
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
 
 class SinglePlayerViewModel: GameViewModel() {
+
+    init {
+        startGame()
+    }
+
     override fun executeMove(positionFromTouch: Constants.BOARD_POSITION) {
         val gameState = game.executeMove(positionFromTouch)
 

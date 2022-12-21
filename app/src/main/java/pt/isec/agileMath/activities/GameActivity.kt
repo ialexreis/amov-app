@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -31,9 +32,6 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var boardGridView: BoardGridView
 
-    private var isOnCreateCalled = false
-
-    // TODO ver o que se passa com a acelaração do timer ao mudar a orientação do layout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
@@ -51,15 +49,9 @@ class GameActivity : AppCompatActivity() {
 
         fragmentNewLevelTransition.fabPauseToggle.setOnClickListener{ singlePlayerViewModel.togglePause() }
 
-        if (!isOnCreateCalled) {
-            singlePlayerViewModel.gameStateObserver.observe(this) {
-                onGameStateChange(it)
-            }
-
-            singlePlayerViewModel.startGame()
+        singlePlayerViewModel.gameStateObserver.observe(this) {
+            onGameStateChange(it)
         }
-
-        isOnCreateCalled = true;
     }
 
     override fun onBackPressed() {
@@ -77,7 +69,7 @@ class GameActivity : AppCompatActivity() {
     private fun onGameStateChange(state: GameState) {
         when(state) {
             GameState.CORRECT_EXPRESSION -> {
-                boardGridView?.buildBoard()
+                boardGridView?.refreshBoard()
                 binding.imgOperationResult?.setBackgroundResource(R.drawable.ic_baseline_correct)
             }
             GameState.FAILED_EXPRESSION -> {
@@ -100,7 +92,7 @@ class GameActivity : AppCompatActivity() {
             GameState.NEW_LEVEL_STARTED -> {
                 singlePlayerViewModel.startNewLevel()
                 setLayoutOnNewLevelTransition(state)
-                boardGridView.buildBoard()
+                boardGridView?.refreshBoard()
             }
             GameState.GAME_OVER_TIME_OUT -> {
                 // TODO handle game over and save the score in firebase
