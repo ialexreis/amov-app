@@ -26,4 +26,8 @@
     <string name="fr_level_transition_level">Level</string>
     <string name="fr_level_transition_starting_in">Starting in</string>
     <string name="fr_level_transition_btn_pause">Pause</string>
+
+    <string name="exit_confirmation_message">Do you really want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

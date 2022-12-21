@@ -1,7 +1,6 @@
 package pt.isec.agileMath.viewModels.gameViewModel
 
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
+import android.util.Log
 import kotlinx.coroutines.delay
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
@@ -23,4 +22,5 @@ class SinglePlayerViewModel: GameViewModel() {
 
         setGameState(GameState.NEW_LEVEL_STARTED)
     }
+
 }

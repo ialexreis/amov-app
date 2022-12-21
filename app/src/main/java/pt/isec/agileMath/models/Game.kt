@@ -7,7 +7,6 @@ data class Game(
     var isRunning: Boolean = false,
 
     var level: Int = 1,
-    var maxLevel: Int = 4,
 
     var successExpressionsToNextLevel: Int = 10,
     var successExpressionsCounter: Int = 0,

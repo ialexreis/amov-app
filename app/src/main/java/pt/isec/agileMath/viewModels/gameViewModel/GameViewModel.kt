@@ -60,12 +60,24 @@ abstract class GameViewModel: ViewModel() {
 
     fun initCountdownToNextLevel() {
         timerCoroutine?.cancel()
-        viewModelScope.launch { nextLevelCountdownRoutine() }
+        timerCoroutine = viewModelScope.launch { nextLevelCountdownRoutine() }
     }
 
     fun startNewLevel() {
         countdownToInitNextLevel = 5
         timerCoroutine = viewModelScope.launch { gameClockRoutine() }
+    }
+
+    fun togglePause() {
+        if (isCountdownPaused) {
+            setGameState(GameState.NEW_LEVEL_COUNTDOWN_RESUMED)
+            initCountdownToNextLevel()
+        } else {
+            setGameState(GameState.NEW_LEVEL_COUNTDOWN_PAUSED)
+            timerCoroutine?.cancel()
+        }
+
+        isCountdownPaused = !isCountdownPaused
     }
 
     abstract fun executeMove(positionFromTouch: Constants.BOARD_POSITION)

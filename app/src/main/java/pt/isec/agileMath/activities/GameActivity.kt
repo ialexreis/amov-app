@@ -1,18 +1,21 @@
 package pt.isec.agileMath.activities
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import pt.isec.agileMath.R
 import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.databinding.ActivityGameBinding
 import pt.isec.agileMath.databinding.FragmentNewLevelTransitionBinding
 import pt.isec.agileMath.databinding.FragmentScoreBinding
 import pt.isec.agileMath.viewModels.gameViewModel.SinglePlayerViewModel
 import pt.isec.agileMath.views.BoardGridView
+
 
 class GameActivity : AppCompatActivity() {
     companion object {
@@ -28,6 +31,9 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var boardGridView: BoardGridView
 
+    private var isOnCreateCalled = false
+
+    // TODO ver o que se passa com a acelaração do timer ao mudar a orientação do layout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
@@ -35,25 +41,48 @@ class GameActivity : AppCompatActivity() {
         fragmentNewLevelTransition = FragmentNewLevelTransitionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        boardGridView = BoardGridView(this, singlePlayerViewModel)
-
         singlePlayerViewModel.activityBinding = binding
         singlePlayerViewModel.fragmentScoreBinding = fragmentScoreBinding
+
+        boardGridView = BoardGridView(this, singlePlayerViewModel)
 
         binding.frScore?.addView(fragmentScoreBinding.root)
         binding.frGameMatrix?.addView(boardGridView)
 
-        singlePlayerViewModel.gameStateObserver.observe(this) {
-            onGameStateChange(it)
+        fragmentNewLevelTransition.fabPauseToggle.setOnClickListener{ singlePlayerViewModel.togglePause() }
+
+        if (!isOnCreateCalled) {
+            singlePlayerViewModel.gameStateObserver.observe(this) {
+                onGameStateChange(it)
+            }
+
+            singlePlayerViewModel.startGame()
         }
 
-        singlePlayerViewModel.startGame()
+        isOnCreateCalled = true;
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setMessage(R.string.exit_confirmation_message)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setPositiveButton(R.string.yes) { _ ,_ ->
+                // TODO the score in firebase
+                finish()
+            }
+            .setNegativeButton(R.string.no, null)
+            .show()
     }
 
     private fun onGameStateChange(state: GameState) {
         when(state) {
-            GameState.START_NEW_GAME -> {}
-            GameState.CORRECT_EXPRESSION -> boardGridView.buildBoard()
+            GameState.CORRECT_EXPRESSION -> {
+                boardGridView?.buildBoard()
+                binding.imgOperationResult?.setBackgroundResource(R.drawable.ic_baseline_correct)
+            }
+            GameState.FAILED_EXPRESSION -> {
+                binding.imgOperationResult?.setBackgroundResource(R.drawable.ic_baseline_wrong)
+            }
             GameState.LEVEL_COMPLETED -> {
                 singlePlayerViewModel.initCountdownToNextLevel()
                 setLayoutOnNewLevelTransition(state)
@@ -61,12 +90,20 @@ class GameActivity : AppCompatActivity() {
             GameState.NEW_LEVEL_COUNTDOWN_TICK -> {
                 fragmentNewLevelTransition?.tvLevel?.text = singlePlayerViewModel.game.level.toString()
                 fragmentNewLevelTransition?.tvCountdown?.text = singlePlayerViewModel.countdownToInitNextLevel.toString()
-                return
+            }
+            GameState.NEW_LEVEL_COUNTDOWN_PAUSED -> {
+                fragmentNewLevelTransition.fabPauseToggle.setImageResource(android.R.drawable.ic_media_play)
+            }
+            GameState.NEW_LEVEL_COUNTDOWN_RESUMED -> {
+                fragmentNewLevelTransition.fabPauseToggle.setImageResource(android.R.drawable.ic_media_pause)
             }
             GameState.NEW_LEVEL_STARTED -> {
                 singlePlayerViewModel.startNewLevel()
                 setLayoutOnNewLevelTransition(state)
                 boardGridView.buildBoard()
+            }
+            GameState.GAME_OVER_TIME_OUT -> {
+                // TODO handle game over and save the score in firebase
             }
             else -> {}
         }
@@ -77,6 +114,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setLayoutOnNewLevelTransition(gameState: GameState) {
+        binding.imgOperationResult?.setBackgroundResource(0)
         binding.frGameMatrix?.removeAllViewsInLayout()
 
         when(gameState) {
