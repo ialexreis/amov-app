@@ -8,9 +8,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.agileMath.R
 import pt.isec.agileMath.constants.GameState
+import pt.isec.agileMath.constants.Tables
 import pt.isec.agileMath.databinding.ActivityGameBinding
 import pt.isec.agileMath.databinding.FragmentNewLevelTransitionBinding
 import pt.isec.agileMath.databinding.FragmentScoreBinding
+import pt.isec.agileMath.models.Game
+import pt.isec.agileMath.models.Player
+import pt.isec.agileMath.models.Result
+import pt.isec.agileMath.services.FirebaseService
 import pt.isec.agileMath.viewModels.gameViewModel.SinglePlayerViewModel
 import pt.isec.agileMath.views.BoardGridView
 
@@ -57,6 +62,8 @@ class GameActivity : AppCompatActivity() {
             .setIcon(android.R.drawable.ic_dialog_alert)
             .setPositiveButton(R.string.yes) { _ ,_ ->
                 // TODO the score in firebase
+                val result = Result(Player("Alex", ""), singlePlayerViewModel.game.totalPoints)
+                FirebaseService.save(Tables.SCORES.parent, result)
                 finish()
             }
             .setNegativeButton(R.string.no, null)
@@ -93,6 +100,9 @@ class GameActivity : AppCompatActivity() {
             }
             GameState.GAME_OVER_TIME_OUT -> {
                 // TODO handle game over and save the score in firebase
+                val result = Result(Player("Alex", ""), singlePlayerViewModel.game.totalPoints)
+                FirebaseService.save(Tables.SCORES.parent, result)
+                singlePlayerViewModel.setGameState(GameState.GAME_OVER)
             }
             else -> {}
         }

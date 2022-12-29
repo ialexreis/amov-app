@@ -82,7 +82,7 @@ abstract class GameViewModel: ViewModel() {
 
     abstract fun executeMove(positionFromTouch: Constants.BOARD_POSITION)
 
-    abstract suspend fun nextLevelCountdownRoutine();
+    abstract suspend fun nextLevelCountdownRoutine()
 
     private suspend fun gameClockRoutine() {
         while (game.timer > 0) {
