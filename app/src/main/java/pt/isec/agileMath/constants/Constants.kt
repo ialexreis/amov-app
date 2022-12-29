@@ -15,7 +15,5 @@ class Constants {
 
     companion object {
         const val BOARD_LINES = 5
-
-
     }
 }

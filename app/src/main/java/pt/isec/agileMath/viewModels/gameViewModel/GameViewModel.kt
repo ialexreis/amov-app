@@ -1,6 +1,5 @@
 package pt.isec.agileMath.viewModels.gameViewModel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,7 @@ import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.databinding.ActivityGameBinding
 import pt.isec.agileMath.databinding.FragmentScoreBinding
 import pt.isec.agileMath.models.Game
+import pt.isec.agileMath.models.Result
 
 abstract class GameViewModel: ViewModel() {
     lateinit var activityBinding: ActivityGameBinding
@@ -24,6 +24,8 @@ abstract class GameViewModel: ViewModel() {
 
     var countdownToInitNextLevel = 5
     var isCountdownPaused = false
+
+    var result: Result = Result()
 
     var game: Game = Game()
         protected set
@@ -54,6 +56,8 @@ abstract class GameViewModel: ViewModel() {
     }
 
     fun startGame() {
+        result = Result()
+
         setGameState(GameState.START_NEW_GAME)
         timerCoroutine = viewModelScope.launch { gameClockRoutine() }
     }

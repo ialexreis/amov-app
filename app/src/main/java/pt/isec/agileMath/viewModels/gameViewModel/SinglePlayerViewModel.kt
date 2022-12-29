@@ -11,7 +11,7 @@ class SinglePlayerViewModel: GameViewModel() {
     }
 
     override fun executeMove(positionFromTouch: Constants.BOARD_POSITION) {
-        val gameState = game.executeMove(positionFromTouch)
+        val gameState = game.executeMove(positionFromTouch, result)
 
         setGameState(gameState)
     }

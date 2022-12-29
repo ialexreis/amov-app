@@ -65,8 +65,7 @@ class GameActivity : AppCompatActivity() {
             .setPositiveButton(R.string.yes) { _ ,_ ->
                 // TODO the score in firebase
                 runBlocking {
-                    val result = Result(Player("Alex", ""), singlePlayerViewModel.game.totalPoints)
-                    FirebaseService.save(Tables.SCORES.parent, result)
+                    FirebaseService.save(Tables.SCORES.parent, singlePlayerViewModel.result)
                 }
                 finish()
             }
@@ -105,15 +104,14 @@ class GameActivity : AppCompatActivity() {
             GameState.GAME_OVER_TIME_OUT -> {
                 // TODO handle game over and save the score in firebase
                 runBlocking {
-                    val result = Result(Player("Alex", ""), singlePlayerViewModel.game.totalPoints)
-                    FirebaseService.save(Tables.SCORES.parent, result)
+                    FirebaseService.save(Tables.SCORES.parent, singlePlayerViewModel.result)
                     singlePlayerViewModel.setGameState(GameState.GAME_OVER)
                 }
             }
             else -> {}
         }
 
-        fragmentScoreBinding?.score?.text = singlePlayerViewModel.game.totalPoints.toString()
+        fragmentScoreBinding?.score?.text = singlePlayerViewModel.result.score.toString()
         fragmentScoreBinding?.tvLevel?.text = singlePlayerViewModel.game.level.toString()
         fragmentScoreBinding?.timeleft?.text = singlePlayerViewModel.game.timer.toString()
     }

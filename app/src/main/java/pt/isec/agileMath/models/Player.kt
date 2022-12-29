@@ -1,6 +1,13 @@
 package pt.isec.agileMath.models
 
 data class Player(
-    val name: String,
-    val pictureUrl: String,
-)
+    var name: String = "",
+    var pictureUrl: String = "",
+) {
+    init {
+        // TODO get data from sharedpreferences
+
+        name = "";
+        pictureUrl = "";
+    }
+}

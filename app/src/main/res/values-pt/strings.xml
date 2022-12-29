@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AgileMath</string>
+    <string name="new_game">Jogo individual</string>
+    <string name="new_game_two_players">Jogo multi-jogador</string>
+    <string name="profile">Perfil do jogador</string>
+    <string name="nickname">Nome</string>
+    <string name="save">Guardar</string>
+    <string name="takepicture">Tirar Foto</string>
+    <string name="avatar">Avatar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="score">Pontos</string>
+    <string name="level">Nivel</string>
+    <string name="_00000">00000</string>
+    <string name="time">Tempo</string>
+    <string name="_00">00</string>
+    <string name="start_server_as_client">Iniciar como Cliente</string>
+    <string name="start_as_server">Iniciar como Servidor</string>
+    <string name="button_cancel">Cancelar</string>
+    <string name="btn_emulator">Emular</string>
+    <string name="error_address">IP Inválido</string>
+    <string name="button_connect">Conectar</string>
+    <string name="ask_ip">Inserir Ip</string>
+
+    <string name="fr_level_transition_level">Nivel</string>
+    <string name="fr_level_transition_starting_in">Inicia em</string>
+    <string name="fr_level_transition_btn_pause">Pausa</string>
+
+    <string name="exit_confirmation_message">Deseja mesmo sair?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+</resources>

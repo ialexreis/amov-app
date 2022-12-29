@@ -14,7 +14,6 @@ data class Game(
     var maxBaseValue: Long = 10L,
     var timer: Int = 90,
     var successTime: Int = 3,
-    var totalPoints: Int = 0,
     val successOperationMaxValue: Int = 2,
     val successOperationSecondMaxValue: Int = 1,
 ){
@@ -36,10 +35,10 @@ data class Game(
         board = Board(maxBaseValue, operators)
     }
 
-    fun executeMove(positionFromTouch: Constants.BOARD_POSITION): GameState {
+    fun executeMove(positionFromTouch: Constants.BOARD_POSITION, playerResult: Result): GameState {
         var gameState = when(positionFromTouch) {
-            board.maxValueBoardPosition -> onCorrectOperation(successOperationMaxValue)
-            board.secondMaxValueBoardPosition -> onCorrectOperation(successOperationSecondMaxValue)
+            board.maxValueBoardPosition -> onCorrectOperation(successOperationMaxValue, playerResult)
+            board.secondMaxValueBoardPosition -> onCorrectOperation(successOperationSecondMaxValue, playerResult)
             else -> GameState.FAILED_EXPRESSION
         }
 
@@ -73,8 +72,8 @@ data class Game(
         buildBoard()
     }
 
-    private fun onCorrectOperation(pointsToIncrement: Int): GameState {
-        totalPoints += pointsToIncrement
+    private fun onCorrectOperation(pointsToIncrement: Int, playerResult: Result): GameState {
+        playerResult.score += pointsToIncrement
         successExpressionsCounter++
 
         synchronized(timer) {

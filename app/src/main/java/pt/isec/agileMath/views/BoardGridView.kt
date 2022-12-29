@@ -151,7 +151,7 @@ class BoardGridView @JvmOverloads constructor(
 
 
     private fun getGridViewAdapter(): BaseAdapter {
-        val cellSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70f, resources.displayMetrics).toInt()
+        val cellSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60f, resources.displayMetrics).toInt()
 
         return object : BaseAdapter() {
             override fun getCount(): Int = boardVector.size
@@ -177,7 +177,7 @@ class BoardGridView @JvmOverloads constructor(
                     gravity = 1
                     setTextColor(Color.parseColor("#000000"))
                     setBackgroundColor(Color.parseColor(backgroundColor))
-                    textSize = 25F
+                    textSize = 20F
                     width = cellSize
                     height = cellSize
                     textAlignment = TEXT_ALIGNMENT_CENTER
