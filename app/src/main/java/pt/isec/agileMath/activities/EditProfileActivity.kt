@@ -19,6 +19,7 @@ import pt.isec.agileMath.constants.Tables
 import pt.isec.agileMath.databinding.ActivityEditProfileBinding
 import pt.isec.agileMath.models.Player
 import pt.isec.agileMath.services.FirebaseService
+import pt.isec.agileMath.services.Image64Utils
 import pt.isec.agileMath.services.PreferenceServices.customPreference
 import pt.isec.agileMath.services.PreferenceServices.id
 import pt.isec.agileMath.services.PreferenceServices.nickname
@@ -57,12 +58,12 @@ class EditProfileActivity : AppCompatActivity() {
 
         val prefs = customPreference(this, PREFERENCE_NAME)
 
-
         binding.nickname.setText(prefs.nickname)
 
-        var imagePath = prefs.profile_url.toString()
-        if (imagePath.isNotEmpty()){
-            val takenImage = BitmapFactory.decodeFile(imagePath)
+        var imagePath = prefs.profile_url?.toByteArray()
+
+        if (imagePath!!.isNotEmpty()){
+            val takenImage = BitmapFactory.decodeByteArray(imagePath, 0, imagePath.size)
             binding.imageView.setImageBitmap(takenImage)
         }
 
@@ -91,9 +92,11 @@ class EditProfileActivity : AppCompatActivity() {
         var file = getPhotoFile(FILE_NAME)
         var name = binding.nickname.text.toString()
 
+        var str = Image64Utils.byteArrToString(file.readBytes())
+
         val prefs = customPreference(this, PREFERENCE_NAME)
         prefs.nickname = name.ifEmpty { "Player 1" }
-        prefs.profile_url = file.name
+        prefs.profile_url = str
 
         runBlocking {
             var id = FirebaseService.save(Tables.PLAYERS.parent, Player(prefs.nickname, prefs.profile_url))
@@ -111,13 +114,6 @@ class EditProfileActivity : AppCompatActivity() {
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
-//        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-//            val takenImage = BitmapFactory.decodeFile(file.absolutePath)
-//            binding.imageView.setImageBitmap(takenImage)
-//        } else {
-//            super.onActivityResult(requestCode, resultCode, data)
-//        }
-
     }
 
     @SuppressLint("SimpleDateFormat")

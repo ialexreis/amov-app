@@ -9,15 +9,14 @@ import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import org.apache.commons.text.StringEscapeUtils
 import pt.isec.agileMath.adapters.ListAdapter
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.ListType
 import pt.isec.agileMath.constants.Tables
 import pt.isec.agileMath.databinding.ActivityScoreRegistryBinding
+import pt.isec.agileMath.models.Player
 import pt.isec.agileMath.models.Result
 import pt.isec.agileMath.services.FirebaseService
 import pt.isec.agileMath.services.PreferenceServices
@@ -64,9 +63,14 @@ class ScoreRegistryActivity : AppCompatActivity() {
 
         var result = response?.documents
         result?.forEach { item ->
-            var json = JsonParser.parseString(item.data.toString()).asJsonObject
+            val playerhash : HashMap<String, String> = item.data?.get("player") as HashMap<String, String>
+            var result: Result = Result(
+                Player( name = playerhash.get("name"), pictureUrl = playerhash["pictureUrl"]),
+                score = item.data?.get("score") as Long,
+                totalTime = item.data?.get("totalTime") as Long
+            )
 
-            data.add(gson.fromJson( json, Result::class.java))
+            data.add(result)
             Log.i("AGILES", data.toString())
         }
 
