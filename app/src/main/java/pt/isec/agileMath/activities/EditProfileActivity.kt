@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -12,13 +13,25 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.runBlocking
+import pt.isec.agileMath.constants.Constants.Companion.PREFERENCE_NAME
+import pt.isec.agileMath.constants.Tables
 import pt.isec.agileMath.databinding.ActivityEditProfileBinding
+import pt.isec.agileMath.models.Player
+import pt.isec.agileMath.services.FirebaseService
+import pt.isec.agileMath.services.PreferenceServices.customPreference
+import pt.isec.agileMath.services.PreferenceServices.id
+import pt.isec.agileMath.services.PreferenceServices.nickname
+import pt.isec.agileMath.services.PreferenceServices.profile_url
 import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EditProfileActivity : AppCompatActivity() {
 
     companion object {
-        private const val FILE_NAME = "photo.jpg"
+        private const val FILE_NAME = "avatar_"
         private const val REQUEST_CODE = 42
 
         fun getIntent(ctx: Context): Intent {
@@ -28,6 +41,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditProfileBinding
     private lateinit var file: File
+    lateinit var currentPhotoPath: String
 
     var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -40,7 +54,20 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val prefs = customPreference(this, PREFERENCE_NAME)
+
+
+        binding.nickname.setText(prefs.nickname)
+
+        var imagePath = prefs.profile_url.toString()
+        if (imagePath.isNotEmpty()){
+            val takenImage = BitmapFactory.decodeFile(imagePath)
+            binding.imageView.setImageBitmap(takenImage)
+        }
+
         binding.btnTakePicture.setOnClickListener { takePicture() }
+        binding.saveProfile.setOnClickListener { onSave() }
     }
 
     fun openActivityForResult() {
@@ -52,16 +79,7 @@ class EditProfileActivity : AppCompatActivity() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         file = getPhotoFile(FILE_NAME)
 
-        // This DOESN'T work for API >= 24 (starting 2016)
-        // takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile)
-
-        val fileProvider = FileProvider.getUriForFile(this, "pt.isec.agileMath.fileprovider", file)
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
-        if (takePictureIntent.resolveActivity(this.packageManager) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_CODE)
-        } else {
-            Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
-        }
+        dispatchTakePictureIntent()
     }
 
     private fun getPhotoFile(fileName: String): File {
@@ -70,6 +88,74 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     fun onSave() {
+        var file = getPhotoFile(FILE_NAME)
+        var name = binding.nickname.text.toString()
 
+        val prefs = customPreference(this, PREFERENCE_NAME)
+        prefs.nickname = name.ifEmpty { "Player 1" }
+        prefs.profile_url = file.name
+
+        runBlocking {
+            var id = FirebaseService.save(Tables.PLAYERS.parent, Player(prefs.nickname, prefs.profile_url))
+            prefs.id = id.toString()
+        }
+
+        Toast.makeText(applicationContext,"User information saved",Toast.LENGTH_SHORT).show()
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            val imageBitmap = BitmapFactory.decodeFile(file.absolutePath)
+            binding.imageView.setImageBitmap(imageBitmap)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+//        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+//            val takenImage = BitmapFactory.decodeFile(file.absolutePath)
+//            binding.imageView.setImageBitmap(takenImage)
+//        } else {
+//            super.onActivityResult(requestCode, resultCode, data)
+//        }
+
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                // Create the File where the photo should go
+                file = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    return
+                }
+                // Continue only if the File was successfully created
+                file.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(applicationContext, "pt.isec.agileMath.fileprovider", it)
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+
+                    @Suppress("DEPRECATION")
+                    startActivityForResult(takePictureIntent, REQUEST_CODE)
+                }
+            }
+        }
     }
 }

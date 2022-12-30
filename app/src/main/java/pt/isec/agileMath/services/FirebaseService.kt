@@ -1,9 +1,10 @@
 package pt.isec.agileMath.services
 
-import com.google.firebase.database.DataSnapshot
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
 
 class FirebaseService {
@@ -24,10 +25,19 @@ class FirebaseService {
             return task.id
         }
 
-        /*fun get(key: String, id: String) : DataSnapshot{}*/
+        suspend fun get(key: String, id: String): MutableMap<String, Any>? {
+            val collection: CollectionReference = getInstance().collection(key)
 
-/*        fun update(key: String, id: String, value: Any): String{
+            val task = collection.document(id).get().await()
 
-        }*/
+            return task.data
+        }
+
+        fun list(key:String): Task<QuerySnapshot> {
+            val collection: CollectionReference = getInstance().collection(key)
+
+            return collection.get()
+        }
+
     }
 }

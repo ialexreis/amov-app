@@ -6,18 +6,19 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import pt.isec.agileMath.R
+import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.constants.Tables
 import pt.isec.agileMath.databinding.ActivityGameBinding
 import pt.isec.agileMath.databinding.FragmentNewLevelTransitionBinding
 import pt.isec.agileMath.databinding.FragmentScoreBinding
 import pt.isec.agileMath.models.Player
-import pt.isec.agileMath.models.Result
 import pt.isec.agileMath.services.FirebaseService
+import pt.isec.agileMath.services.PreferenceServices
+import pt.isec.agileMath.services.PreferenceServices.nickname
+import pt.isec.agileMath.services.PreferenceServices.profile_url
 import pt.isec.agileMath.viewModels.gameViewModel.SinglePlayerViewModel
 import pt.isec.agileMath.views.BoardGridView
 
@@ -43,8 +44,11 @@ class GameActivity : AppCompatActivity() {
         fragmentNewLevelTransition = FragmentNewLevelTransitionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        var sharedPreferences = PreferenceServices.customPreference(applicationContext, Constants.PREFERENCE_NAME)
+
         singlePlayerViewModel.activityBinding = binding
         singlePlayerViewModel.fragmentScoreBinding = fragmentScoreBinding
+        singlePlayerViewModel.result.player = Player( sharedPreferences.nickname, sharedPreferences.profile_url )
 
         boardGridView = BoardGridView(this, singlePlayerViewModel)
 
@@ -64,9 +68,9 @@ class GameActivity : AppCompatActivity() {
             .setIcon(android.R.drawable.ic_dialog_alert)
             .setPositiveButton(R.string.yes) { _ ,_ ->
                 // TODO the score in firebase
-                runBlocking {
+/*                runBlocking {
                     FirebaseService.save(Tables.SCORES.parent, singlePlayerViewModel.result)
-                }
+                }*/
                 finish()
             }
             .setNegativeButton(R.string.no, null)

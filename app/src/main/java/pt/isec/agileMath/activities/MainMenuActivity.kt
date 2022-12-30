@@ -1,11 +1,9 @@
 package pt.isec.agileMath.activities
 
+
 import android.os.Bundle
-import android.util.Log
-import android.view.Display.Mode
 import androidx.appcompat.app.AppCompatActivity
 import pt.isec.agileMath.databinding.ActivityMainMenuBinding
-import pt.isec.agileMath.models.Board
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -18,11 +16,11 @@ class MainMenuActivity : AppCompatActivity() {
 
         binding.btnSinglePlayer.setOnClickListener { onSinglePlayer() }
         binding.btnMultiplayer.setOnClickListener { onMultiplayer() }
-        binding.btnEditProfile.setOnClickListener { onEditProfile() }
+        binding.btnOptions.setOnClickListener { onOptions() }
 
     }
 
-    fun onEditProfile() = startActivity(EditProfileActivity.getIntent(this))
+    fun onOptions() = startActivity(OptionsActivity.getIntent(this))
     fun onSinglePlayer() = startActivity(GameActivity.getIntent(this))
     fun onMultiplayer() = startActivity(ModeActivity.getIntent(this))
 }

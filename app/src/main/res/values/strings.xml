@@ -30,4 +30,9 @@
     <string name="exit_confirmation_message">Do you really want to exit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="all_highscores">All Highscores</string>
+    <string name="my_scores">My Scores</string>
+    <string name="options">Options</string>
+    <string name="total_time">Total Time</string>
+    <string name="scores">Scores</string>
 </resources>
