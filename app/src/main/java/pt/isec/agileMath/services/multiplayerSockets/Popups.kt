@@ -1,4 +1,4 @@
-package pt.isec.agileMath.multiplayer
+package pt.isec.agileMath.services.multiplayerSockets
 
 import android.app.AlertDialog
 import android.content.Context
@@ -6,10 +6,9 @@ import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.ConnectivityManager
-import android.provider.Settings.Global.getString
+import android.net.InetAddresses
 import android.text.InputFilter
 import android.text.Spanned
-import android.util.Patterns
 import android.util.Patterns.IP_ADDRESS
 import android.view.Gravity
 import android.view.View
@@ -18,8 +17,8 @@ import android.widget.Toast.*
 import pt.isec.agileMath.R
 
 class Popups {
-
     companion object {
+        private var activePopup: AlertDialog? = null
 
         private fun Context.getConnectivityManager() =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -28,7 +27,12 @@ class Popups {
             getLinkProperties(activeNetwork)!!.linkAddresses[1].address.hostAddress!!
         }
 
-        fun serverPopup(ctx: Context) {
+        fun close() {
+            activePopup?.cancel()
+            activePopup = null
+        }
+
+        fun serverPopup(ctx: Context, onStartGame: (() -> Unit), onCancel: (() -> Unit)) {
             val ip = getIpAddress(ctx)
             val ll = LinearLayout(ctx).apply {
                 val params = LinearLayout.LayoutParams(
@@ -61,15 +65,23 @@ class Popups {
                     textAlignment = View.TEXT_ALIGNMENT_CENTER
                 })
             }
-            val dlg = AlertDialog.Builder(ctx)
+            activePopup = AlertDialog.Builder(ctx)
                 .setTitle(R.string.start_as_server)
+                .setPositiveButton(R.string.button_start) { _, _ ->
+                    onStartGame()
+                }
+                .setNegativeButton(R.string.button_cancel) { _, _ ->
+                    onCancel()
+                    close()
+                }
                 .setView(ll)
+                .setCancelable(false)
                 .create()
 
-            dlg?.show()
+            activePopup?.show()
         }
 
-        fun clientPopup(ctx: Context) {
+        fun clientPopup(ctx: Context, onConnect: (hostname: String) -> Unit, onCancel: () -> Unit) {
             val edtBox = EditText(ctx).apply {
                 maxLines = 1
                 filters = arrayOf(object : InputFilter {
@@ -94,29 +106,33 @@ class Popups {
 
                 })
             }
-            val dlg = AlertDialog.Builder(ctx)
+            activePopup = AlertDialog.Builder(ctx)
                 .setTitle(R.string.start_server_as_client)
                 .setMessage(R.string.ask_ip)
                 .setPositiveButton(R.string.button_connect) { _: DialogInterface, _: Int ->
                     val strIP = edtBox.text.toString()
-                    if (strIP.isEmpty() || !IP_ADDRESS.matcher(strIP).matches()) {
-                        makeText(ctx, R.string.error_address, LENGTH_LONG).show()
-                    } else {
+
+                    if (strIP.isEmpty()) {
+                        return@setPositiveButton
                     }
+
+                    onConnect.invoke(strIP)
                 }
-                .setNeutralButton(R.string.btn_emulator) { _: DialogInterface, _: Int ->
+                // .setNeutralButton(R.string.btn_emulator) { _: DialogInterface, _: Int ->
                     // Configure port redirect on the Server Emulator:
                     // telnet localhost <5554|5556|5558|...>
                     // auth <key>
                     // redir add tcp:9998:9999
-                }
-                .setNegativeButton(R.string.button_cancel) { _: DialogInterface, _: Int ->
+                // }
+                .setNegativeButton(R.string.button_cancel) { _, _ ->
+                    onCancel()
+                    close()
                 }
                 .setCancelable(false)
                 .setView(edtBox)
                 .create()
 
-            dlg.show()
+            activePopup?.show()
         }
     }
 }

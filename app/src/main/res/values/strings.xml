@@ -15,8 +15,8 @@
     <string name="_00000">00000</string>
     <string name="time">Time</string>
     <string name="_00">00</string>
-    <string name="start_server_as_client">Start as Client</string>
-    <string name="start_as_server">Start as Server</string>
+    <string name="start_server_as_client">Connect to a server</string>
+    <string name="start_as_server">Waiting For Players</string>
     <string name="button_cancel">Cancel</string>
     <string name="btn_emulator">Emulate</string>
     <string name="error_address">Invalid ip address</string>
@@ -35,4 +35,5 @@
     <string name="options">Options</string>
     <string name="total_time">Total Time</string>
     <string name="scores">Scores</string>
+    <string name="button_start">Start</string>
 </resources>

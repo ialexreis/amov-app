@@ -17,7 +17,7 @@ abstract class GameViewModel: ViewModel() {
     lateinit var fragmentScoreBinding: FragmentScoreBinding
 
     private val boardDimension = Constants.BOARD_LINES * Constants.BOARD_LINES
-    private lateinit var timerCoroutine: Job
+    private var timerCoroutine: Job? = null
 
     private val gameState = MutableLiveData<GameState>()
     var gameStateObserver: LiveData<GameState> = gameState
@@ -55,21 +55,21 @@ abstract class GameViewModel: ViewModel() {
         }
     }
 
-    fun startGame() {
+    open fun startGame() {
         result = Result()
 
         setGameState(GameState.START_NEW_GAME)
         timerCoroutine = viewModelScope.launch { gameClockRoutine() }
     }
 
+    open fun startNewLevel() {
+        countdownToInitNextLevel = 5
+        timerCoroutine = viewModelScope.launch { gameClockRoutine() }
+    }
+
     fun initCountdownToNextLevel() {
         timerCoroutine?.cancel()
         timerCoroutine = viewModelScope.launch { nextLevelCountdownRoutine() }
-    }
-
-    fun startNewLevel() {
-        countdownToInitNextLevel = 5
-        timerCoroutine = viewModelScope.launch { gameClockRoutine() }
     }
 
     fun togglePause() {
