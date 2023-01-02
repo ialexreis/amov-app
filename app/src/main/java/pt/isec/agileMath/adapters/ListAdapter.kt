@@ -1,5 +1,6 @@
 package pt.isec.agileMath.adapters
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,10 @@ class ListAdapter(var dataset: MutableList<Result>) :
             binding.score.text = get.score.toString()
             binding.time.text = get.totalTime.toString()
             binding.name.text = get.player.name
+
+            var arr = get.player.pictureUrl?.toByteArray()
+            val takenImage = BitmapFactory.decodeByteArray(arr, 0, arr!!.size)
+            binding.icon.setImageBitmap(takenImage)
         }
     }
 
