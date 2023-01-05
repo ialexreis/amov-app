@@ -1,19 +1,27 @@
 package pt.isec.agileMath.models
 
 import kotlinx.coroutines.Job
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.net.ServerSocket
 import java.net.Socket
 
 
-data class MultiplayerConnection(
-    val socket: Socket,
-    var messageReaderCoroutine: Job? = null
-)
+class MultiplayerConnection
 {
-    val socketIn: InputStream?
-        get() = socket?.getInputStream()
-    val socketOut: OutputStream?
-        get() = socket?.getOutputStream()
+    var socket: Socket
+        private set
+
+    var socketIn: BufferedReader
+        private set
+
+    var socketOut: PrintWriter
+        private set
+
+
+    constructor(socket: Socket, messageReaderCoroutine: Thread? = null) {
+        this.socket = socket
+
+        this.socketIn = socket.getInputStream().bufferedReader()
+        this.socketOut = PrintWriter(socket.getOutputStream());
+    }
 }

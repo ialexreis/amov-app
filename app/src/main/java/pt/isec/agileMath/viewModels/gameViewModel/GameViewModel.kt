@@ -51,7 +51,7 @@ abstract class GameViewModel: ViewModel() {
 
     fun setGameState(gameState: GameState) {
         synchronized(gameStateObserver) {
-            this.gameState.value = gameState
+            this.gameState.postValue(gameState)
         }
     }
 

@@ -1,9 +1,9 @@
 package pt.isec.agileMath.viewModels.gameViewModel
 
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import android.util.Log
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
+import pt.isec.agileMath.models.Game
 import pt.isec.agileMath.models.MultiplayerConnection
 import pt.isec.agileMath.models.SocketMessagePayload
 import pt.isec.agileMath.models.Result
@@ -53,23 +53,28 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     }
 
     fun onConnectionLost(playerConnection: MultiplayerConnection) {
-
+        setGameState(GameState.SOCKET_ERROR)
     }
 
     fun onMultiplayerGameStateChange(state: GameState) {
         when(state) {
+            GameState.CONNECTION_TO_SERVER_ESTABLISHED -> replyToServer(SocketMessagePayload(Game(), Result(), GameState.CONNECT_CLIENT))
             else -> {}
         }
+
+        Log.i("onMultiplayerGameStateChange", state.toString())
     }
 
     fun onMessageReceived(socketConnection: MultiplayerConnection, messagePayload: SocketMessagePayload) {
         when(messagePayload.gameState) {
-            GameState.CLIENT_CONNECTED -> {
+            GameState.CONNECT_CLIENT -> {
                 playersConnected.add(messagePayload.playerResult.copy())
                 setGameState(GameState.REFRESH_PLAYERS_LIST)
             }
             else -> {}
         }
+
+        Log.e("onMessageReceived", messagePayload.gameState.toString())
     }
 
     override fun executeMove(positionFromTouch: Constants.BOARD_POSITION) {

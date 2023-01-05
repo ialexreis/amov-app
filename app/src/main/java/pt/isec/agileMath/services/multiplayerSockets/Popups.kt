@@ -24,7 +24,7 @@ class Popups {
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         private fun getIpAddress(context: Context) = with(context.getConnectivityManager()) {
-            getLinkProperties(activeNetwork)!!.linkAddresses[1].address.hostAddress!!
+            getLinkProperties(activeNetwork)!!.linkAddresses[0].address.hostAddress!!
         }
 
         fun close() {

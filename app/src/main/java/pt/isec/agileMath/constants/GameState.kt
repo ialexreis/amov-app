@@ -1,5 +1,6 @@
 package pt.isec.agileMath.constants
 
+
 enum class GameState {
     START_NEW_GAME,
     NEW_LEVEL_COUNTDOWN_TICK,
@@ -16,7 +17,7 @@ enum class GameState {
     // Multiplayer
     START_AS_HOST,
     START_AS_CLIENT,
-    CLIENT_CONNECTED,
+    CONNECT_CLIENT,
     SETTING_PARAMETERS,
     CLIENT_DISCONNECTED,
     WAITING_GAME_CONFIGS,
@@ -25,6 +26,9 @@ enum class GameState {
     CONNECTION_ERROR,
     CONNECTION_ESTABLISHED,
     CONNECTION_TO_SERVER_ERROR,
+    CONNECTION_TO_SERVER_ESTABLISHED,
+
+    SOCKET_ERROR,
 
     // Multiplayer UI
     REFRESH_PLAYERS_LIST,

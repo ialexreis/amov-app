@@ -13,9 +13,6 @@ import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.databinding.ActivityMultiplayerBinding
 import pt.isec.agileMath.databinding.FragmentNewLevelTransitionBinding
 import pt.isec.agileMath.databinding.FragmentScoreBinding
-import pt.isec.agileMath.models.Game
-import pt.isec.agileMath.models.Result
-import pt.isec.agileMath.models.SocketMessagePayload
 import pt.isec.agileMath.services.multiplayerSockets.Popups
 import pt.isec.agileMath.viewModels.gameViewModel.MultiplayerPlayerViewModel
 import pt.isec.agileMath.views.BoardGridView
@@ -98,15 +95,11 @@ class MultiplayerActivity : AppCompatActivity() {
             }
             GameState.GAME_OVER_TIME_OUT -> {
             }
-            GameState.CONNECTION_ESTABLISHED ->
-               return viewModel.replyToServer(SocketMessagePayload(Game(), Result(), GameState.CLIENT_CONNECTED))
-
             GameState.CONNECTION_TO_SERVER_ERROR -> {
                 Toast.makeText(this, R.string.error_address, Toast.LENGTH_LONG).show()
                 finish()
                 return
             }
-
             else -> {}
         }
 
