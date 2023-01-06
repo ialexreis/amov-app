@@ -1,21 +1,17 @@
-package pt.isec.agileMath.services.multiplayerSockets
+package pt.isec.agileMath.services
 
 import android.util.Log
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import java.net.Socket
 import java.net.ServerSocket
 import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.models.MultiplayerConnection
-import pt.isec.agileMath.models.SocketMessagePayload
+import pt.isec.agileMath.models.messagePayloads.ServerMessagePayload
+import pt.isec.agileMath.models.messagePayloads.ClientMessagePayload
 import pt.isec.agileMath.viewModels.gameViewModel.MultiplayerPlayerViewModel
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
 import kotlin.concurrent.thread
 
-class MultiplayerSocketsService {
+class SocketsService {
     private var serverSocket: ServerSocket? = null
 
     private var viewModel: MultiplayerPlayerViewModel
@@ -54,8 +50,7 @@ class MultiplayerSocketsService {
                 val socket = Socket(hostName, serverPort)
                 connectionWithServer = MultiplayerConnection(socket)
 
-                messageReaderCoroutine(connectionWithServer!!)
-                // connection.messageReaderCoroutine = messageReaderCoroutine(connection)
+                serverMessagesReaderCoroutine(connectionWithServer!!)
 
                 viewModel.setGameState(GameState.CONNECTION_TO_SERVER_ESTABLISHED)
                 Log.e("CONNECTION", "Connected to server")
@@ -66,13 +61,12 @@ class MultiplayerSocketsService {
         }
     }
 
-    fun replyToServer(messagePayload: SocketMessagePayload) {
+    fun replyToServer(messagePayload: ClientMessagePayload) {
         thread {
-
             try {
                 Log.e("replyToServer", messagePayload.gameState.toString())
 
-                connectionWithServer?.socketOut?.println(SocketMessagePayload.toJson(messagePayload))
+                connectionWithServer?.socketOut?.println(messagePayload.toJson())
                 connectionWithServer?.socketOut?.flush()
             } catch (e: Exception) {
                 Log.e("replyToServer", "ERROR")
@@ -87,58 +81,57 @@ class MultiplayerSocketsService {
     fun closeAll() {
         for (item in clientsConnectionList) {
             item.socket.close()
-            // item.messageReaderCoroutine?.close()
         }
+
+        connectionWithServer?.close()
 
         clientsConnectionList.clear()
     }
 
-    private fun startClientConnection(socket: Socket) {
-        /*
-        MultiplayerConnection.socket = skt
-        MultiplayerConnection.threadCom = thread {
-            try {
-                if(MultiplayerConnection.socketIn == null)
-                    return@thread
+    private fun clientMessagesReaderCoroutine(
+        socketConnection: MultiplayerConnection
+    ) {
+        thread {
 
-                this.viewModel.setGameState(GameState.CONNECTION_ESTABLISHED)
-                val inputBuffer: BufferedReader = MultiplayerConnection.socketIn!!.bufferedReader()
-                while (this.viewModel.gameStateObserver.value !in arrayOf(GameState.GAME_OVER)){
-                    val message = inputBuffer.readLine()
-                    if(message.toString().isNotEmpty()){
-                        // communication between games
-                    }
+            var clientUUID: String? = null
+
+            while (true) {
+                try {
+                    val messageString = socketConnection.socketIn.readLine()
+                    val messagePayload = ClientMessagePayload.fromString(messageString)
+
+                    clientUUID = messagePayload.playerResult.player.uuid
+
+                    viewModel.onMessageReceived(socketConnection, messagePayload)
+                } catch (e: IOException) {
+                    viewModel.onConnectionLost(socketConnection, clientUUID)
+                    break
+                } catch (e: ClassCastException) { }
+                catch (e: Exception) {
+                    e.printStackTrace()
+                    break
                 }
-            } catch (_e: Exception) {
-                var err = _e.message
-            } finally {
-                // stop game
             }
         }
-        */
     }
 
-    private fun messageReaderCoroutine(
+    private fun serverMessagesReaderCoroutine(
         socketConnection: MultiplayerConnection
     ) {
         thread {
             while (true) {
                 try {
-                    Log.e("READER_ROUTINE", "Waiting Message")
-
                     val messageString = socketConnection.socketIn.readLine()
-
-                    Log.e("READER_ROUTINE", "MESSAGE Received $messageString")
-
-                    val messagePayload = SocketMessagePayload.fromString(messageString)
-                    Log.e("READER_ROUTINE", "Message class: ${messagePayload.gameState}")
+                    val messagePayload = ServerMessagePayload.fromString(messageString)
 
                     viewModel.onMessageReceived(socketConnection, messagePayload)
                 } catch (e: IOException) {
                     viewModel.onConnectionLost(socketConnection)
+                    clientsConnectionList.remove(socketConnection)
                     break
-                } catch (e: Exception) {
-                    Log.e("RECEIVED MESSAGE MALFORMED", e.stackTraceToString())
+                } catch (e: ClassCastException) { }
+                catch (e: Exception) {
+                    e.printStackTrace()
                     break
                 }
             }
@@ -151,16 +144,11 @@ class MultiplayerSocketsService {
        }
 
         while (true) {
-            // Wait for client connection
-            Log.e("SERVER", "Waiting Connections")
             val clientSocket = serverSocket!!.accept()
-            Log.e("SERVER", "Connection Established")
 
             val clientConnection = MultiplayerConnection(clientSocket)
 
-            messageReaderCoroutine(clientConnection)
-            // clientConnection.messageReaderCoroutine = messageReaderCoroutine(clientConnection)
-            // clientConnection.messageReaderCoroutine?.start()
+            clientMessagesReaderCoroutine(clientConnection)
 
             clientsConnectionList.add(clientConnection)
 

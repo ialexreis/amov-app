@@ -46,8 +46,6 @@ class GameActivity : AppCompatActivity() {
 
         var sharedPreferences = PreferenceServices.customPreference(applicationContext, Constants.PREFERENCE_NAME)
 
-        singlePlayerViewModel.activityBinding = binding
-        singlePlayerViewModel.fragmentScoreBinding = fragmentScoreBinding
         singlePlayerViewModel.result.player = Player( sharedPreferences.nickname, sharedPreferences.profile_url )
 
         boardGridView = BoardGridView(this, singlePlayerViewModel)

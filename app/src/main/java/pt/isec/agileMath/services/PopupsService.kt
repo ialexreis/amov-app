@@ -1,4 +1,4 @@
-package pt.isec.agileMath.services.multiplayerSockets
+package pt.isec.agileMath.services
 
 import android.app.AlertDialog
 import android.content.Context
@@ -6,14 +6,11 @@ import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.ConnectivityManager
-import android.net.InetAddresses
 import android.text.InputFilter
 import android.text.Spanned
-import android.util.Patterns.IP_ADDRESS
 import android.view.Gravity
 import android.view.View
 import android.widget.*
-import android.widget.Toast.*
 import pt.isec.agileMath.R
 
 class Popups {
@@ -130,6 +127,40 @@ class Popups {
                 }
                 .setCancelable(false)
                 .setView(edtBox)
+                .create()
+
+            activePopup?.show()
+        }
+
+        fun waitingPopupSpinner(ctx: Context, titleStringResource: Int, onCancel: () -> Unit) {
+            val ll = LinearLayout(ctx).apply {
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                layoutParams = params
+                setBackgroundColor(Color.rgb(240, 224, 208))
+                orientation = LinearLayout.HORIZONTAL
+                addView(ProgressBar(context).apply {
+                    isIndeterminate = true
+                    val paramsPB = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    paramsPB.gravity = Gravity.CENTER
+                    paramsPB.layoutDirection = Gravity.CENTER
+                    layoutParams = paramsPB
+                    indeterminateTintList = ColorStateList.valueOf(Color.rgb(96, 96, 32))
+                })
+            }
+            activePopup = AlertDialog.Builder(ctx)
+                .setTitle(titleStringResource)
+                .setView(ll)
+                .setNegativeButton(R.string.button_cancel) { _, _ ->
+                    onCancel()
+                    close()
+                }
+                .setCancelable(false)
                 .create()
 
             activePopup?.show()

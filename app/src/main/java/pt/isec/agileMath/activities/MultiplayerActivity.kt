@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -13,11 +12,10 @@ import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.databinding.ActivityMultiplayerBinding
 import pt.isec.agileMath.databinding.FragmentNewLevelTransitionBinding
 import pt.isec.agileMath.databinding.FragmentScoreBinding
-import pt.isec.agileMath.services.multiplayerSockets.Popups
+import pt.isec.agileMath.services.Popups
 import pt.isec.agileMath.viewModels.gameViewModel.MultiplayerPlayerViewModel
 import pt.isec.agileMath.views.BoardGridView
 import pt.isec.agileMath.views.ScoresRecyclerListView
-import java.io.IOException
 
 class MultiplayerActivity : AppCompatActivity() {
     private val viewModel: MultiplayerPlayerViewModel by viewModels()
@@ -49,7 +47,7 @@ class MultiplayerActivity : AppCompatActivity() {
             viewModel.onMultiplayerGameStateChange(it)
         }
 
-        viewModel.initGame(intent.getBooleanExtra(TO_START_AS_HOST_KEY, false))
+        viewModel.initGame(this, intent.getBooleanExtra(TO_START_AS_HOST_KEY, false))
     }
 
     override fun onBackPressed() {
@@ -95,11 +93,17 @@ class MultiplayerActivity : AppCompatActivity() {
             }
             GameState.GAME_OVER_TIME_OUT -> {
             }
+            GameState.GAME_STARTED -> {
+                Popups.close()
+            }
+            GameState.CONNECTION_TO_SERVER_ESTABLISHED ->
+                Popups.waitingPopupSpinner(this, R.string.popup_waiting_game_to_start) { finish() }
             GameState.CONNECTION_TO_SERVER_ERROR -> {
                 Toast.makeText(this, R.string.error_address, Toast.LENGTH_LONG).show()
                 finish()
                 return
             }
+
             else -> {}
         }
 

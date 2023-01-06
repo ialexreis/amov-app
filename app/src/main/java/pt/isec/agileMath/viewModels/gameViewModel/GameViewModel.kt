@@ -13,9 +13,6 @@ import pt.isec.agileMath.models.Game
 import pt.isec.agileMath.models.Result
 
 abstract class GameViewModel: ViewModel() {
-    lateinit var activityBinding: ActivityGameBinding
-    lateinit var fragmentScoreBinding: FragmentScoreBinding
-
     private val boardDimension = Constants.BOARD_LINES * Constants.BOARD_LINES
     private var timerCoroutine: Job? = null
 

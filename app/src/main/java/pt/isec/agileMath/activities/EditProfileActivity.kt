@@ -20,6 +20,7 @@ import pt.isec.agileMath.databinding.ActivityEditProfileBinding
 import pt.isec.agileMath.models.Player
 import pt.isec.agileMath.services.FirebaseService
 import pt.isec.agileMath.services.Image64Utils
+import pt.isec.agileMath.services.PreferenceServices
 import pt.isec.agileMath.services.PreferenceServices.customPreference
 import pt.isec.agileMath.services.PreferenceServices.id
 import pt.isec.agileMath.services.PreferenceServices.nickname
@@ -37,6 +38,12 @@ class EditProfileActivity : AppCompatActivity() {
 
         fun getIntent(ctx: Context): Intent {
             return Intent(ctx, EditProfileActivity::class.java)
+        }
+
+        fun getProfilePlayer(ctx: Context): Player {
+            val prefs = customPreference(ctx, PREFERENCE_NAME)
+
+            return Player(prefs.nickname, prefs.profile_url)
         }
     }
 

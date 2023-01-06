@@ -18,10 +18,14 @@ class MultiplayerConnection
         private set
 
 
-    constructor(socket: Socket, messageReaderCoroutine: Thread? = null) {
+    constructor(socket: Socket) {
         this.socket = socket
 
         this.socketIn = socket.getInputStream().bufferedReader()
         this.socketOut = PrintWriter(socket.getOutputStream());
+    }
+
+    fun close() {
+        socket.close()
     }
 }

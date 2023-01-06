@@ -10,9 +10,6 @@ object PreferenceServices {
     val USER_AVATAR = "PROFILE_URL"
     var USER_DOCUMENT = "DOCUMENT"
 
-    fun defaultPreference(context: Context): SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
-
     fun customPreference(context: Context, name: String): SharedPreferences =
         context.getSharedPreferences(name, Context.MODE_PRIVATE)
 
@@ -47,7 +44,7 @@ object PreferenceServices {
         }
 
     var SharedPreferences.clearValues
-        get() = { }
+        get() = run { }
         set(value) {
             editMe {
                 it.clear()

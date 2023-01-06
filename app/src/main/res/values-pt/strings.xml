@@ -36,4 +36,6 @@
     <string name="total_time">Total Time</string>
     <string name="scores">Scores</string>
     <string name="button_start">Start</string>
+
+    <string name="popup_waiting_game_to_start">Waiting game to start</string>
 </resources>
