@@ -1,8 +1,6 @@
 package pt.isec.agileMath.models
 
-import kotlinx.coroutines.Job
 import java.io.*
-import java.net.ServerSocket
 import java.net.Socket
 
 

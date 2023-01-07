@@ -47,7 +47,7 @@ class MultiplayerActivity : AppCompatActivity() {
             viewModel.onMultiplayerGameStateChange(it)
         }
 
-        viewModel.initGame(this, intent.getBooleanExtra(TO_START_AS_HOST_KEY, false))
+        viewModel.initMultiplayer(this, intent.getBooleanExtra(TO_START_AS_HOST_KEY, false))
     }
 
     override fun onBackPressed() {

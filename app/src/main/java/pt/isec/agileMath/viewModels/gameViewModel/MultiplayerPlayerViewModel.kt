@@ -2,18 +2,17 @@ package pt.isec.agileMath.viewModels.gameViewModel
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import pt.isec.agileMath.activities.EditProfileActivity
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
-import pt.isec.agileMath.models.Game
 import pt.isec.agileMath.models.MultiplayerConnection
 import pt.isec.agileMath.models.Player
 import pt.isec.agileMath.models.messagePayloads.ClientMessagePayload
 import pt.isec.agileMath.models.Result
 import pt.isec.agileMath.models.messagePayloads.ServerMessagePayload
-import pt.isec.agileMath.services.SocketsService
-import java.util.UUID
+import pt.isec.agileMath.services.socketsService.ClientSocketsService
+import pt.isec.agileMath.services.socketsService.ServerSocketsService
+import pt.isec.agileMath.services.socketsService.SocketsService
 
 class MultiplayerPlayerViewModel: GameViewModel() {
     lateinit var player: Player
@@ -24,47 +23,43 @@ class MultiplayerPlayerViewModel: GameViewModel() {
 
     private var wasAlreadyInitialized = false
 
-    private val multiplayerSocketService = SocketsService(this)
+    private var socketsService: SocketsService? = null
 
-    fun initGame(context: Context, isHost: Boolean) {
+    fun initMultiplayer(context: Context, isHost: Boolean) {
         this.isHost = isHost
         this.player = EditProfileActivity.getProfilePlayer(context)
 
         wasAlreadyInitialized = true
 
         if (isHost) {
+            socketsService = ServerSocketsService(this)
             setGameState(GameState.START_AS_HOST)
             return
         }
 
+        socketsService = ClientSocketsService(this)
         setGameState(GameState.START_AS_CLIENT)
     }
 
     fun endGame() {
-        if (isHost) {
-            multiplayerSocketService.stopServer()
-        }
-
-        multiplayerSocketService.closeAll()
-
+        socketsService?.close()
         setGameState(GameState.CONNECTION_ENDED)
     }
 
     fun startServer() {
-        multiplayerSocketService.startServer()
+        socketsService?.initServer()
     }
 
     fun connectToServer(hostname: String) {
-        multiplayerSocketService.connectToServer(hostname)
+        socketsService?.connect(hostname, ServerSocketsService.port)
     }
 
     fun replyToServer(messagePayload: ClientMessagePayload) {
-        multiplayerSocketService.replyToServer(messagePayload)
+        socketsService?.sendMessage(messagePayload)
     }
 
-
     fun onConnectionLost(playerConnection: MultiplayerConnection, clientUUID: String?) {
-        playersConnected.filter { !it.player.uuid.equals(clientUUID) }
+        playersConnected.filter { it.player.uuid != clientUUID }
 
         onConnectionLost(playerConnection)
     }
@@ -117,10 +112,6 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     override fun onCleared() {
         super.onCleared()
 
-        if (isHost) {
-            multiplayerSocketService.stopServer()
-        }
-
-        multiplayerSocketService.closeAll()
+        socketsService?.close()
     }
 }

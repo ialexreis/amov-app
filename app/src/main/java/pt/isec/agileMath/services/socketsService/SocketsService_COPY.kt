@@ -11,10 +11,10 @@ import pt.isec.agileMath.viewModels.gameViewModel.MultiplayerPlayerViewModel
 import java.io.IOException
 import kotlin.concurrent.thread
 
-class SocketsService {
+class SocketsService_COPY {
     private var serverSocket: ServerSocket? = null
-
     private var viewModel: MultiplayerPlayerViewModel
+
     private var serverPort = 8081
 
     private val clientsConnectionList = ArrayList<MultiplayerConnection>()
