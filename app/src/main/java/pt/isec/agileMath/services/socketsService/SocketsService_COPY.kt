@@ -1,4 +1,4 @@
-package pt.isec.agileMath.services
+package pt.isec.agileMath.services.socketsService
 
 import android.util.Log
 import java.net.Socket
@@ -33,7 +33,6 @@ class SocketsService {
             } catch (_e: Exception) {
                 _e.message?.let { Log.e("Connection error", it) }
                 viewModel.setGameState(GameState.CONNECTION_ERROR)
-
                 stopServer()
             }
         }
