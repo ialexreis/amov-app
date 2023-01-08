@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import pt.isec.agileMath.R
 import pt.isec.agileMath.databinding.FragmentScoresListItemBinding
 import pt.isec.agileMath.models.MultiplayerPlayer
 import pt.isec.agileMath.models.PlayerResult
@@ -19,9 +20,9 @@ class ScoresRecyclerListView@JvmOverloads constructor(
     defStyleRes: Int = 0
 ): RecyclerView(context, attrs, defStyleRes) {
 
-    private lateinit var scoresResults: MutableCollection<MultiplayerPlayer>
+    private lateinit var scoresResults: List<MultiplayerPlayer>
 
-    constructor(context: Context, scoresResults: MutableCollection<MultiplayerPlayer>) : this(context) {
+    constructor(context: Context, scoresResults: List<MultiplayerPlayer>) : this(context) {
         val layoutManagerScores = LinearLayoutManager(context)
 
         layoutManagerScores.orientation = LinearLayoutManager.HORIZONTAL
@@ -34,7 +35,7 @@ class ScoresRecyclerListView@JvmOverloads constructor(
 
     private fun getListViewAdapter(): Adapter<ViewHolder> {
         return object : Adapter<ViewHolder>() {
-            fun getItem(position: Int): PlayerResult = scoresResults.elementAt(position).playerDetails
+            fun getItem(position: Int): MultiplayerPlayer = scoresResults.elementAt(position)
 
             override fun getItemId(position: Int): Long = position.toLong()
 
@@ -49,10 +50,20 @@ class ScoresRecyclerListView@JvmOverloads constructor(
 
                 // TODO set image from base64
                 // holder.ivProfileImage.setImageBitmap()
-
-                holder.tvNickname.text = item.player.name
-                holder.tvScore.text = "${item.score} pts"
+                holder.tvNickname.text = item.playerDetails.player.name
+                holder.tvScore.text = "${item.playerDetails.score} pts"
                 holder.tvPodiumPosition.text = "${position + 1}º"
+
+                if (item.lostGame) {
+                    holder.ivLevelState.setBackgroundResource(R.drawable.ic_baseline_wrong)
+                }
+                else if (item.isLevelFinished) {
+                    holder.ivLevelState.setBackgroundResource(R.drawable.ic_baseline_correct)
+                }
+                else {
+                    holder.ivLevelState.setBackgroundResource(android.R.color.transparent)
+                }
+
             }
 
             override fun getItemCount(): Int = scoresResults.size
@@ -65,12 +76,14 @@ class ScoresRecyclerListView@JvmOverloads constructor(
         var tvNickname: TextView
         var tvScore: TextView
         var tvPodiumPosition: TextView
+        var ivLevelState: ImageView
 
         constructor(itemView: FragmentScoresListItemBinding): super(itemView.root) {
             this.ivProfileImage = itemView.ivPlayerImage
             this.tvNickname = itemView.tvNickname
             this.tvScore = itemView.tvScore
             this.tvPodiumPosition = itemView.tvPodiumPosition
+            this.ivLevelState = itemView.ivLevelState
         }
     }
 }

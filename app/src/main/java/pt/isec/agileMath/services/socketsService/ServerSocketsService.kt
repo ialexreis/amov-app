@@ -45,8 +45,6 @@ class ServerSocketsService: SocketsService {
                 }
 
             } catch (e: Exception) {
-                Log.e("Connection error", e.toString())
-
                 viewModel.setGameState(GameState.CONNECTION_ERROR)
                 this.close()
             }
@@ -69,7 +67,6 @@ class ServerSocketsService: SocketsService {
                 destinationConnection?.socketOut?.println(messagePayload.toJson())
                 destinationConnection?.socketOut?.flush()
             } catch (e: Exception) {
-                Log.e("replyToClient", "ERROR")
                 viewModel.setGameState(GameState.SOCKET_ERROR)
             }
         }

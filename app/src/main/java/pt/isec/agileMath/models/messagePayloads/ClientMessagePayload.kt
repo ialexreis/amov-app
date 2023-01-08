@@ -40,12 +40,8 @@ class ClientMessagePayload: JsonParserInterface {
                 } catch (e: JSONException) {
                     Constants.BOARD_POSITION.NONE.toString()
                 }
-                Log.e("Cli FromMess", playerResultObject.toString())
 
                 val playerResult = Gson().fromJson(playerResultObject.toString(), PlayerResult::class.java)
-
-                Log.e("Cli FromMess2", playerResult.player.uuid)
-                Log.e("Cli FromMess3", MainMenuActivity.APP_EXECUTION_UUID)
 
                 return ClientMessagePayload(playerResult, GameState.valueOf(gameStateValue), Constants.BOARD_POSITION.valueOf(boardPositionValue))
             }

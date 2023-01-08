@@ -33,7 +33,13 @@ class Game {
         board = Board(maxBaseValue, operators)
     }
 
-    constructor(level: Int, timer: Int, board: Board): this() {
+    constructor(board: Board): this() {
+        this.level = level
+        this.timer = timer
+        this.board = board
+    }
+
+    constructor(level: Int, timer: Int): this() {
         this.level = level
         this.timer = timer
         this.board = board

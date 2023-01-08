@@ -3,6 +3,7 @@ package pt.isec.agileMath.constants
 
 enum class GameState {
     GAME_STARTED,
+    NEW_LEVEL_COUNTDOWN_STARTED,
     NEW_LEVEL_COUNTDOWN_TICK,
     NEW_LEVEL_COUNTDOWN_PAUSED,
     NEW_LEVEL_COUNTDOWN_RESUMED,

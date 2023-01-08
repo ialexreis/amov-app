@@ -57,7 +57,7 @@ data class Board(
     // TODO Está com BUGGGG! N determina corretamente o valor das colunas
     private fun getOperationsMaxResultFromColumns() {
         for (lineIndex in matrix.indices) {
-            if (lineIndex % 2 != 0) { return }
+            if (lineIndex % 2 != 0) { continue }
 
             val operationResult = calculateOperationFromColumn(lineIndex)
 

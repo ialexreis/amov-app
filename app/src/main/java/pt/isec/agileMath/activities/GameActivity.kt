@@ -26,8 +26,20 @@ import pt.isec.agileMath.views.BoardGridView
 
 class GameActivity : AppCompatActivity() {
     companion object {
+        const val LEVEL_KEY = "LEVEL_KEY"
+        const val CURRENT_TIMER_KEY = "CURRENT_TIMER_KEY"
+
         fun getIntent(ctx: Context): Intent {
             return Intent(ctx, GameActivity::class.java)
+        }
+
+        fun getIntent(ctx: Context, level: Int, currentTimer: Int): Intent {
+            val intent = Intent(ctx, GameActivity::class.java)
+
+            intent.putExtra(LEVEL_KEY, level)
+            intent.putExtra(CURRENT_TIMER_KEY, currentTimer)
+
+            return intent
         }
     }
     private val singlePlayerViewModel: SinglePlayerViewModel by viewModels()
@@ -59,6 +71,12 @@ class GameActivity : AppCompatActivity() {
         singlePlayerViewModel.gameStateObserver.observe(this) {
             onGameStateChange(it)
         }
+
+        singlePlayerViewModel.initSinglePlayer(
+            this,
+            intent.getIntExtra(LEVEL_KEY, 1),
+            intent.getIntExtra(CURRENT_TIMER_KEY, 90)
+        )
     }
 
     override fun onBackPressed() {

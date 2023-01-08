@@ -1,5 +1,8 @@
 package pt.isec.agileMath.models
 
 data class MultiplayerPlayer(
-    val playerDetails: PlayerResult,
-    var activeBoardIndex: Int = 0)
+    var playerDetails: PlayerResult,
+    var activeBoardIndex: Int = 0,
+    var isLevelFinished: Boolean = false,
+    var lostGame: Boolean = false
+)

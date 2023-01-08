@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.delay
 import pt.isec.agileMath.activities.EditProfileActivity
+import pt.isec.agileMath.activities.MainMenuActivity
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.models.*
@@ -18,20 +19,26 @@ import kotlin.math.log
 class MultiplayerPlayerViewModel: GameViewModel() {
     lateinit var player: MultiplayerPlayer
 
-    var isHost: Boolean = false
+    var isHost = false
+    var isGameStarted = false
 
-    val generatedBoardsData = arrayListOf<Board>()
+    var firstFinishGame = true
 
     // Key -> Player UUID
     var playersMap = mutableMapOf<String, MultiplayerPlayer>()
-    val playersGameMap = mutableMapOf<String, Game>()
-    val playersConnectionMap = mutableMapOf<String, MultiplayerConnection>()
+    private val playersGameMap = mutableMapOf<String, Game>()
+    private val playersConnectionMap = mutableMapOf<String, MultiplayerConnection>()
+    private val generatedBoardsData = arrayListOf<Board>()
 
     private var wasAlreadyInitialized = false
 
     private var socketsService: SocketsService? = null
 
     fun initMultiplayer(context: Context, isHost: Boolean) {
+        if (wasAlreadyInitialized) {
+            return
+        }
+
         this.isHost = isHost
         this.player = MultiplayerPlayer(
             PlayerResult(
@@ -73,13 +80,12 @@ class MultiplayerPlayerViewModel: GameViewModel() {
 
     fun replyToClients(gameState: GameState) {
         for (playerUUID in playersMap.keys) {
-            val connection = playersConnectionMap[playerUUID]
-            val player = playersMap[playerUUID]
+            val connection = playersConnectionMap[playerUUID] ?: continue
 
-            if (connection != null && player != null) {
-                Log.e("REPLY TO CLIENTS", gameState.toString())
-                socketsService?.sendMessage(generateServerPayloadResponse(player, gameState), connection)
-            }
+            if (playersMap[playerUUID]?.lostGame == true && gameState != GameState.REFRESH_PLAYERS_LIST) { continue }
+
+            socketsService?.sendMessage(generateServerPayloadResponse(playerUUID, gameState), connection)
+
         }
     }
 
@@ -90,7 +96,6 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     }
 
     fun onConnectionLost(playerConnection: MultiplayerConnection) {
-        Log.e("onConnectionLost", "CONNECTION LOSS WITH CLIENT")
         setGameState(GameState.CLIENT_DISCONNECTED)
     }
 
@@ -106,9 +111,8 @@ class MultiplayerPlayerViewModel: GameViewModel() {
             GameState.GAME_STARTED -> {
                 replyToClients(GameState.GAME_STARTED)
             }
-            GameState.CLOCK_TICK -> {
-                replyToClients(GameState.CLOCK_TICK)
-            }
+            GameState.CLOCK_TICK -> replyToClients(GameState.CLOCK_TICK)
+            GameState.NEW_LEVEL_COUNTDOWN_STARTED -> initCountdownToNextLevel()
             else -> {}
         }
 
@@ -118,23 +122,31 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     // ServerSocketService - Clients messages reader routine
     fun onClientMessageReceived(socketConnection: MultiplayerConnection, messagePayload: ClientMessagePayload) {
 
-        var clientUUID = messagePayload.playerResult.player.uuid
-        var player = playersMap[clientUUID]
+        var playerUUID = messagePayload.playerResult.player.uuid
 
         when(messagePayload.gameState) {
             GameState.CONNECT_CLIENT -> {
                 val multiplayerPlayer = MultiplayerPlayer(messagePayload.playerResult)
+                val playerGame = Game(getBoard(multiplayerPlayer.activeBoardIndex))
 
-                addNewPlayer(multiplayerPlayer, Game(), socketConnection)
+                addNewPlayer(multiplayerPlayer, playerGame, socketConnection)
 
-                socketsService?.sendMessage(generateServerPayloadResponse(multiplayerPlayer, GameState.CLIENT_CONNECTED), socketConnection)
+                socketsService?.sendMessage(generateServerPayloadResponse(playerUUID, GameState.CLIENT_CONNECTED), socketConnection)
                 setGameState(GameState.REFRESH_PLAYERS_LIST)
             }
-            GameState.VALIDATE_EXPRESSION -> validateExpression(socketConnection, messagePayload)
+            GameState.VALIDATE_EXPRESSION -> {
+                var gameState = validateExpression(socketConnection, messagePayload)
+                replyToClients(GameState.REFRESH_PLAYERS_LIST)
+                setGameState(GameState.REFRESH_PLAYERS_LIST)
+
+                if (gameState == GameState.LEVEL_COMPLETED && isEveryLevelFinished()) {
+                    setGameState(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
+                    replyToClients(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
+                }
+
+            }
             else -> {}
         }
-
-        Log.e("onClientMessageReceived", messagePayload.gameState.toString())
     }
 
     // ClientSocketService - Clients messages reader routine
@@ -146,21 +158,34 @@ class MultiplayerPlayerViewModel: GameViewModel() {
 
                 setGameState(GameState.REFRESH_PLAYERS_LIST)
             }
-            GameState.CLOCK_TICK,
-            GameState.CORRECT_EXPRESSION,
+            GameState.REFRESH_PLAYERS_LIST -> playersMap = messagePayload.players
+            GameState.CLOCK_TICK -> game = messagePayload.clientGame
             GameState.FAILED_EXPRESSION -> game = messagePayload.clientGame
+            GameState.CORRECT_EXPRESSION -> updateAllData(messagePayload)
+            GameState.LEVEL_COMPLETED -> updateAllData(messagePayload)
+
             else -> {}
         }
-
-
-        Log.e("onServerMessageReceived", messagePayload.gameState.toString())
         setGameState(messagePayload.gameState)
     }
 
+    override fun startGame() {
+        this.isGameStarted = true
+
+        super.startGame()
+    }
 
     override fun executeMove(positionFromTouch: Constants.BOARD_POSITION) {
         if (isHost) {
-            setGameState(validateMyExpression(positionFromTouch)?: GameState.NONE)
+            var gameState = validateMyExpression(positionFromTouch)?: GameState.NONE
+            setGameState(gameState)
+            replyToClients(GameState.REFRESH_PLAYERS_LIST)
+
+            if (gameState == GameState.LEVEL_COMPLETED && isEveryLevelFinished()) {
+                setGameState(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
+                replyToClients(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
+            }
+
             return
         }
 
@@ -174,7 +199,22 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     }
 
     override suspend fun nextLevelCountdownRoutine() {
+        if (!isHost) {
+            return
+        }
 
+        while (countdownToInitNextLevel > 0) {
+            delay(1000)
+            countdownToInitNextLevel--
+            // setGameState(GameState.NEW_LEVEL_COUNTDOWN_TICK)
+        }
+
+        onNewLevelResetData()
+
+        startNewLevel()
+
+        replyToClients(GameState.NEW_LEVEL_STARTED)
+        setGameState(GameState.NEW_LEVEL_STARTED)
     }
 
     override fun onCleared() {
@@ -188,17 +228,51 @@ class MultiplayerPlayerViewModel: GameViewModel() {
             return
         }
 
-        while (game.timer > 0) {
+        while (true) {
             delay(1000)
 
-            for (playerGame in playersGameMap.values) {
-                playerGame.clockTick()
-            }
+            val isSomeGameRunning = runClock()
 
             setGameState(GameState.CLOCK_TICK)
+
+            if (!isSomeGameRunning) { return }
+        }
+    }
+
+    private fun runClock(): Boolean {
+
+        var isSomeGameRunning = false
+
+        for (playerUUID in playersMap.keys) {
+            var player = playersMap[playerUUID]
+            var playerGame = playersGameMap[playerUUID]
+            var playerConnection = playersConnectionMap[playerUUID]
+
+            if (player == null || playerGame == null || player.lostGame || player.isLevelFinished) {continue}
+
+            if (playerGame.timer > 0) {
+                isSomeGameRunning = true
+                playerGame.clockTick()
+                continue
+            }
+
+            player.lostGame = true
+            player.isLevelFinished = true
+
+            if (playerUUID == MainMenuActivity.APP_EXECUTION_UUID) {
+                setGameState(GameState.GAME_OVER_TIME_OUT)
+                replyToClients(GameState.REFRESH_PLAYERS_LIST)
+                continue
+            }
+
+            if (playerConnection != null) {
+                socketsService?.sendMessage(generateServerPayloadResponse(playerUUID, GameState.GAME_OVER_TIME_OUT), playerConnection)
+            }
+
+            replyToClients(GameState.REFRESH_PLAYERS_LIST)
         }
 
-        setGameState(GameState.GAME_OVER_TIME_OUT)
+        return isSomeGameRunning
     }
 
     private fun getBoard(index: Int): Board {
@@ -241,8 +315,8 @@ class MultiplayerPlayerViewModel: GameViewModel() {
         }
     }
 
-    private fun generateServerPayloadResponse(player: MultiplayerPlayer, gameState: GameState): ServerMessagePayload {
-        var clientGame = playersGameMap[player.playerDetails.player.uuid]
+    private fun generateServerPayloadResponse(playerUUID: String, gameState: GameState): ServerMessagePayload {
+        var clientGame = playersGameMap[playerUUID]
 
         if (clientGame == null) {
             clientGame = game
@@ -252,8 +326,10 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     }
 
     private fun validateMyExpression(boardPosition: Constants.BOARD_POSITION): GameState? {
-        val playerGame = playersGameMap[player.playerDetails.player.uuid] ?: return null
-        val player = playersMap[player.playerDetails.player.uuid] ?: return null
+        val playerUUID = player.playerDetails.player.uuid
+
+        val playerGame = playersGameMap[playerUUID] ?: return null
+        val player = playersMap[playerUUID] ?: return null
 
         val gameState = playerGame.executeMove(boardPosition, player.playerDetails, true)
 
@@ -262,8 +338,16 @@ class MultiplayerPlayerViewModel: GameViewModel() {
                 player.activeBoardIndex++
                 playerGame.board = getBoard(player.activeBoardIndex)
             }
-            // TODO
-            // GameState.LEVEL_COMPLETED -> {}
+            GameState.LEVEL_COMPLETED -> {
+                player.activeBoardIndex = 0
+                player.isLevelFinished = true
+
+                if (firstFinishGame) {
+                    firstFinishGame = false
+                    player.playerDetails.score += 5
+                }
+
+            }
             else -> {}
         }
 
@@ -271,8 +355,10 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     }
 
     private fun validateExpression(messagePayload: ClientMessagePayload): GameState? {
-        val playerGame = playersGameMap[messagePayload.playerResult.player.uuid] ?: return null
-        val player = playersMap[messagePayload.playerResult.player.uuid] ?: return null
+        val playerUUID = messagePayload.playerResult.player.uuid
+
+        val playerGame = playersGameMap[playerUUID] ?: return null
+        val player = playersMap[playerUUID] ?: return null
 
         val gameState = playerGame.executeMove(messagePayload.boardPosition, player.playerDetails, true)
 
@@ -281,18 +367,67 @@ class MultiplayerPlayerViewModel: GameViewModel() {
                 player.activeBoardIndex++
                 playerGame.board = getBoard(player.activeBoardIndex)
             }
-            // TODO
-            // GameState.LEVEL_COMPLETED -> {}
+            GameState.LEVEL_COMPLETED -> {
+                player.activeBoardIndex = 0
+                player.isLevelFinished = true
+
+                if (firstFinishGame) {
+                    firstFinishGame = false
+                    player.playerDetails.score += 5
+                }
+
+            }
             else -> {}
         }
 
         return gameState
     }
 
-    private fun validateExpression(socketConnection: MultiplayerConnection, messagePayload: ClientMessagePayload) {
-        var gameState = validateExpression(messagePayload) ?: return
+    private fun validateExpression(socketConnection: MultiplayerConnection, messagePayload: ClientMessagePayload): GameState {
+        var gameState = validateExpression(messagePayload) ?: return GameState.NONE
 
-        socketsService?.sendMessage(generateServerPayloadResponse(player, gameState), socketConnection)
+        socketsService?.sendMessage(generateServerPayloadResponse(messagePayload.playerResult.player.uuid, gameState), socketConnection)
+
+        return gameState
+    }
+
+    private fun updatePlayerData(playersMap: MutableMap<String, MultiplayerPlayer>) {
+        val playerResult = playersMap[MainMenuActivity.APP_EXECUTION_UUID]
+        if (playerResult != null) {
+            player.playerDetails = playerResult.playerDetails
+        }
+    }
+
+    private fun updateAllData(messagePayload: ServerMessagePayload) {
+        game = messagePayload.clientGame
+        playersMap = messagePayload.players
+        updatePlayerData(playersMap)
+    }
+
+    private fun isEveryLevelFinished(): Boolean {
+        for (players in playersMap.values) {
+            if (!players.isLevelFinished) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private fun onNewLevelResetData() {
+        generatedBoardsData.clear()
+
+        for (playerUUID in playersMap.keys) {
+            var player = playersMap[playerUUID]
+            var playerGame = playersGameMap[playerUUID]
+
+            if (player?.lostGame == true) { continue }
+
+            player?.activeBoardIndex = 0
+            player?.isLevelFinished = false
+
+            playerGame?.board = getBoard(0)
+        }
     }
 
 }

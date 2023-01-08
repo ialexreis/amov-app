@@ -2,11 +2,14 @@ package pt.isec.agileMath.activities
 
 import android.content.Context
 import android.content.Intent
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import pt.isec.agileMath.R
 import pt.isec.agileMath.constants.GameState
@@ -15,6 +18,7 @@ import pt.isec.agileMath.databinding.FragmentNewLevelTransitionBinding
 import pt.isec.agileMath.databinding.FragmentScoreBinding
 import pt.isec.agileMath.services.Popups
 import pt.isec.agileMath.viewModels.gameViewModel.MultiplayerPlayerViewModel
+import pt.isec.agileMath.viewModels.gameViewModel.SinglePlayerViewModel
 import pt.isec.agileMath.views.BoardGridView
 import pt.isec.agileMath.views.ScoresRecyclerListView
 
@@ -35,6 +39,12 @@ class MultiplayerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         boardGridView = BoardGridView(this, viewModel)
+
+        if (viewModel.isGameStarted) {
+            refreshBoard()
+        }
+
+        refreshPlayersList()
 
         binding.frScore?.addView(fragmentScoreBinding.root)
 
@@ -81,29 +91,28 @@ class MultiplayerActivity : AppCompatActivity() {
             GameState.REFRESH_PLAYERS_LIST -> refreshPlayersList()
             GameState.CORRECT_EXPRESSION -> {
                 refreshBoard()
+                refreshPlayersList()
                 binding.imgOperationResult?.setBackgroundResource(R.drawable.ic_baseline_correct)
             }
             GameState.FAILED_EXPRESSION -> {
                 binding.imgOperationResult?.setBackgroundResource(R.drawable.ic_baseline_wrong)
-            }
-            GameState.LEVEL_COMPLETED -> {
-            }
-            GameState.NEW_LEVEL_COUNTDOWN_TICK -> {
-            }
-            GameState.NEW_LEVEL_COUNTDOWN_PAUSED -> {
-            }
-            GameState.NEW_LEVEL_COUNTDOWN_RESUMED -> {
-            }
-            GameState.NEW_LEVEL_STARTED -> {
-            }
-            GameState.GAME_OVER_TIME_OUT -> {
             }
             GameState.GAME_STARTED -> {
                 refreshBoard()
                 viewModel.startGame()
                 Popups.close()
             }
-            GameState.CLIENT_DISCONNECTED -> refreshPlayersList()
+            GameState.LEVEL_COMPLETED -> setLayoutOnNewLevelTransition(state)
+            GameState.NEW_LEVEL_COUNTDOWN_STARTED -> setLayoutOnNewLevelTransition(state)
+            GameState.NEW_LEVEL_STARTED -> {
+                setLayoutOnNewLevelTransition(state)
+                refreshBoard()
+                refreshPlayersList()
+            }
+            GameState.GAME_OVER_TIME_OUT -> setLayoutOnNewLevelTransition(state)
+            GameState.CLIENT_DISCONNECTED, GameState.SOCKET_ERROR -> {
+                refreshPlayersList()
+            }
             GameState.CONNECTION_TO_SERVER_ESTABLISHED ->
                 Popups.waitingPopupSpinner(this, R.string.popup_waiting_game_to_start) { finish() }
             GameState.CONNECTION_TO_SERVER_ERROR -> {
@@ -115,7 +124,7 @@ class MultiplayerActivity : AppCompatActivity() {
             else -> {}
         }
 
-        fragmentScoreBinding?.score?.text = viewModel.result.score.toString()
+        fragmentScoreBinding?.score?.text = viewModel.player.playerDetails.score.toString()
         fragmentScoreBinding?.tvLevel?.text = viewModel.game.level.toString()
         fragmentScoreBinding?.timeleft?.text = viewModel.game.timer.toString()
     }
@@ -135,9 +144,11 @@ class MultiplayerActivity : AppCompatActivity() {
     }
 
     private fun refreshPlayersList() {
+        val sortedPlayersList = viewModel.playersMap.values.sortedByDescending { it.playerDetails.score }
+
         binding.frPlayersList?.removeAllViewsInLayout()
         binding.frPlayersList?.addView(
-            ScoresRecyclerListView(this, viewModel.playersMap.values)
+            ScoresRecyclerListView(this, sortedPlayersList)
         )
     }
 
@@ -145,6 +156,42 @@ class MultiplayerActivity : AppCompatActivity() {
         boardGridView = BoardGridView(this, viewModel)
         binding.frGameMatrix?.removeAllViewsInLayout()
         binding.frGameMatrix?.addView(boardGridView)
+    }
+
+    private fun setLayoutOnNewLevelTransition(gameState: GameState) {
+        refreshPlayersList()
+
+        binding.imgOperationResult?.setBackgroundResource(0)
+        binding.frGameMatrix?.removeAllViewsInLayout()
+
+        when(gameState) {
+            GameState.LEVEL_COMPLETED -> {
+                val textView = TextView(this)
+                textView.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+                textView.setText(R.string.fragment_level_finish)
+
+                binding.frGameMatrix?.addView(textView)
+            }
+            GameState.NEW_LEVEL_COUNTDOWN_STARTED -> {
+                binding.frGameMatrix?.addView(fragmentNewLevelTransition.root)
+
+                fragmentNewLevelTransition?.tvLevel?.text = viewModel.game.level.toString()
+                fragmentNewLevelTransition?.tvCountdown?.text = "5 sec"
+                fragmentNewLevelTransition?.fabPauseToggle?.visibility = FloatingActionButton.INVISIBLE
+            }
+            GameState.NEW_LEVEL_STARTED -> {
+                refreshBoard()
+                refreshPlayersList()
+            }
+            GameState.GAME_OVER_TIME_OUT -> {
+                val textView = TextView(this)
+                textView.setText(R.string.fragment_game_over)
+                textView.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+
+                binding.frGameMatrix?.addView(textView)
+            }
+            else -> {}
+        }
     }
 
     companion object {

@@ -34,10 +34,7 @@ class ClientSocketsService: SocketsService {
                 messagesReaderRoutine(serverConnection)
 
                 viewModel.setGameState(GameState.CONNECTION_TO_SERVER_ESTABLISHED)
-
-                Log.e("CONNECTION", "Connected to server")
             }catch (e: Exception) {
-                Log.e("connectToServer", "Error connecting to server: $e")
                 viewModel.setGameState(GameState.CONNECTION_TO_SERVER_ERROR)
             }
         }
@@ -50,7 +47,6 @@ class ClientSocketsService: SocketsService {
                 serverConnection?.socketOut?.flush()
 
             } catch (e: Exception) {
-                Log.e("replyToServer", "ERROR")
                 viewModel.setGameState(GameState.SOCKET_ERROR)
             }
         }
