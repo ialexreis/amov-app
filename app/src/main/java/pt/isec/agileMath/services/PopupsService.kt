@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.net.ConnectivityManager
 import android.text.InputFilter
 import android.text.Spanned
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.*
@@ -64,9 +65,7 @@ class Popups {
             }
             activePopup = AlertDialog.Builder(ctx)
                 .setTitle(R.string.start_as_server)
-                .setPositiveButton(R.string.button_start) { _, _ ->
-                    onStartGame()
-                }
+                .setPositiveButton(R.string.button_start, null) //{ _, _ -> onStartGame()}
                 .setNegativeButton(R.string.button_cancel) { _, _ ->
                     onCancel()
                     close()
@@ -76,6 +75,8 @@ class Popups {
                 .create()
 
             activePopup?.show()
+
+            activePopup?.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener{ onStartGame() }
         }
 
         fun clientPopup(ctx: Context, onConnect: (hostname: String) -> Unit, onCancel: () -> Unit) {
@@ -106,21 +107,7 @@ class Popups {
             activePopup = AlertDialog.Builder(ctx)
                 .setTitle(R.string.start_server_as_client)
                 .setMessage(R.string.ask_ip)
-                .setPositiveButton(R.string.button_connect) { _: DialogInterface, _: Int ->
-                    val strIP = edtBox.text.toString()
-
-                    if (strIP.isEmpty()) {
-                        return@setPositiveButton
-                    }
-
-                    onConnect.invoke(strIP)
-                }
-                // .setNeutralButton(R.string.btn_emulator) { _: DialogInterface, _: Int ->
-                    // Configure port redirect on the Server Emulator:
-                    // telnet localhost <5554|5556|5558|...>
-                    // auth <key>
-                    // redir add tcp:9998:9999
-                // }
+                .setPositiveButton(R.string.button_connect, null)
                 .setNegativeButton(R.string.button_cancel) { _, _ ->
                     onCancel()
                     close()
@@ -130,6 +117,17 @@ class Popups {
                 .create()
 
             activePopup?.show()
+
+            activePopup?.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener{
+                val strIP = edtBox.text.toString()
+
+                if (strIP.isEmpty()) {
+                    return@setOnClickListener
+                }
+
+                onConnect.invoke(strIP)
+                close()
+            }
         }
 
         fun waitingPopupSpinner(ctx: Context, titleStringResource: Int, onCancel: () -> Unit) {

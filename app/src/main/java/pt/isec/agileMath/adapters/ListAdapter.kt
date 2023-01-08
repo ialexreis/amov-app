@@ -5,13 +5,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import pt.isec.agileMath.databinding.ContentListViewBinding
-import pt.isec.agileMath.models.Result
+import pt.isec.agileMath.models.PlayerResult
 
-class ListAdapter(var dataset: MutableList<Result>) :
+class ListAdapter(var dataset: MutableList<PlayerResult>) :
     RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ContentListViewBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(get: Result) {
+        fun bind(get: PlayerResult) {
             binding.score.text = get.score.toString()
             binding.time.text = get.totalTime.toString()
             binding.name.text = get.player.name

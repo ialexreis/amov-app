@@ -61,11 +61,10 @@ class ClientSocketsService: SocketsService {
         destinationConnection: MultiplayerConnection
     ) {}
 
+    override fun sendToAll(messagePayload: ServerMessagePayload) {}
+
     override fun messagesReaderRoutine(socketConnection: MultiplayerConnection) {
         thread {
-
-            var clientUUID: String? = null
-
             while (true) {
                 try {
                     val messageString = socketConnection.socketIn.readLine()
@@ -77,9 +76,9 @@ class ClientSocketsService: SocketsService {
                     val messagePayload = ServerMessagePayload.fromString(messageString)
 
 
-                    viewModel.onMessageReceived(socketConnection, messagePayload)
+                    viewModel.onServerMessageReceived(socketConnection, messagePayload)
                 } catch (e: IOException) {
-                    viewModel.onConnectionLost(socketConnection, clientUUID)
+                    viewModel.onConnectionLost(socketConnection)
                     break
                 }
                 catch (e: Exception) {

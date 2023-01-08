@@ -31,6 +31,7 @@ class ServerSocketsService: SocketsService {
             try {
                 serverSocket = ServerSocket(port)
 
+                // TODO block connections when the game starts
                 while (true) {
                     val clientSocket = serverSocket!!.accept()
 
@@ -53,7 +54,13 @@ class ServerSocketsService: SocketsService {
     }
 
     override fun connect(hostname: String, port: Int) {
+        throw IOException("Not implemented in the server service")
+    }
 
+    override fun sendToAll(messagePayload: ServerMessagePayload) {
+        for (connection in clientsConnectionsList) {
+            sendMessage(messagePayload, connection)
+        }
     }
 
     override fun <T> sendMessage(messagePayload: T, destinationConnection: MultiplayerConnection) where T: JsonParserInterface {
@@ -62,7 +69,7 @@ class ServerSocketsService: SocketsService {
                 destinationConnection?.socketOut?.println(messagePayload.toJson())
                 destinationConnection?.socketOut?.flush()
             } catch (e: Exception) {
-                Log.e("replyToServer", "ERROR")
+                Log.e("replyToClient", "ERROR")
                 viewModel.setGameState(GameState.SOCKET_ERROR)
             }
         }
@@ -86,7 +93,7 @@ class ServerSocketsService: SocketsService {
                     val messagePayload = ClientMessagePayload.fromString(messageString)
                     clientUUID = messagePayload.playerResult.player.uuid
 
-                    viewModel.onMessageReceived(socketConnection, messagePayload)
+                    viewModel.onClientMessageReceived(socketConnection, messagePayload)
                 } catch (e: IOException) {
                     viewModel.onConnectionLost(socketConnection, clientUUID)
                     clientsConnectionsList.remove(socketConnection)
@@ -101,8 +108,8 @@ class ServerSocketsService: SocketsService {
     }
 
     override fun close() {
-        for (item in clientsConnectionsList) {
-            item.socket.close()
+        for (connection in clientsConnectionsList) {
+            connection.socket.close()
         }
 
         serverSocket?.close()

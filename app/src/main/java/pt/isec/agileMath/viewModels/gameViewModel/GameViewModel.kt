@@ -7,10 +7,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
-import pt.isec.agileMath.databinding.ActivityGameBinding
-import pt.isec.agileMath.databinding.FragmentScoreBinding
 import pt.isec.agileMath.models.Game
-import pt.isec.agileMath.models.Result
+import pt.isec.agileMath.models.PlayerResult
 
 abstract class GameViewModel: ViewModel() {
     private val boardDimension = Constants.BOARD_LINES * Constants.BOARD_LINES
@@ -22,7 +20,7 @@ abstract class GameViewModel: ViewModel() {
     var countdownToInitNextLevel = 5
     var isCountdownPaused = false
 
-    var result: Result = Result()
+    var result: PlayerResult = PlayerResult()
 
     var game: Game = Game()
         protected set
@@ -53,9 +51,8 @@ abstract class GameViewModel: ViewModel() {
     }
 
     open fun startGame() {
-        result = Result()
+        result = PlayerResult()
 
-        setGameState(GameState.START_NEW_GAME)
         timerCoroutine = viewModelScope.launch { gameClockRoutine() }
     }
 
@@ -85,7 +82,7 @@ abstract class GameViewModel: ViewModel() {
 
     abstract suspend fun nextLevelCountdownRoutine()
 
-    private suspend fun gameClockRoutine() {
+    open suspend fun gameClockRoutine() {
         while (game.timer > 0) {
             delay(1000)
 

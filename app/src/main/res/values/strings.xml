@@ -38,4 +38,6 @@
     <string name="button_start">Start</string>
 
     <string name="popup_waiting_game_to_start">Waiting game to start</string>
+    <string name="popup_min_players_required">To start the game you need at least one more player connected</string>
+    <string name="popup_game_over_store_points">Game Over. Store points in firestore</string>
 </resources>

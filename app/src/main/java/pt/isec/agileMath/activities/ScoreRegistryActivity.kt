@@ -17,7 +17,7 @@ import pt.isec.agileMath.constants.ListType
 import pt.isec.agileMath.constants.Tables
 import pt.isec.agileMath.databinding.ActivityScoreRegistryBinding
 import pt.isec.agileMath.models.Player
-import pt.isec.agileMath.models.Result
+import pt.isec.agileMath.models.PlayerResult
 import pt.isec.agileMath.services.FirebaseService
 import pt.isec.agileMath.services.PreferenceServices
 import pt.isec.agileMath.services.PreferenceServices.nickname
@@ -34,7 +34,7 @@ class ScoreRegistryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityScoreRegistryBinding
     private lateinit var sharedPreferences: SharedPreferences
 
-    var data: MutableList<Result> = listOf<Result>().toMutableList()
+    var data: MutableList<PlayerResult> = listOf<PlayerResult>().toMutableList()
     var gson: Gson = Gson()
     var type: String = ListType.HIGHSCORES.tag
 
@@ -64,7 +64,7 @@ class ScoreRegistryActivity : AppCompatActivity() {
         var result = response?.documents
         result?.forEach { item ->
             val playerhash : HashMap<String, String> = item.data?.get("player") as HashMap<String, String>
-            var result: Result = Result(
+            var result: PlayerResult = PlayerResult(
                 Player( name = playerhash.get("name"), pictureUrl = playerhash["pictureUrl"]),
                 score = item.data?.get("score") as Long,
                 totalTime = item.data?.get("totalTime") as Long

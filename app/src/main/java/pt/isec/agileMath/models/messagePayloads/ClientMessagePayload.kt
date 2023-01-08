@@ -2,35 +2,53 @@ package pt.isec.agileMath.models.messagePayloads
 
 import android.util.Log
 import com.google.gson.Gson
+import org.json.JSONException
 import org.json.JSONObject
 import pt.isec.agileMath.activities.MainMenuActivity
+import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.GameState
-import pt.isec.agileMath.models.Game
-import pt.isec.agileMath.models.Result
+import pt.isec.agileMath.models.PlayerResult
 
 class ClientMessagePayload: JsonParserInterface {
-    var playerResult: Result
+    var playerResult: PlayerResult
         private set
     var gameState: GameState
         private set
+    var boardPosition: Constants.BOARD_POSITION
+        private set
 
-    constructor(playerResult: Result, gameState: GameState) {
+    constructor(
+        playerResult: PlayerResult,
+        gameState: GameState,
+        boardPosition: Constants.BOARD_POSITION = Constants.BOARD_POSITION.NONE
+    ) {
         this.playerResult = playerResult
         this.gameState = gameState
+        this.boardPosition = boardPosition
     }
 
     override inline fun toJson(): String = Gson().toJson(this)
 
     companion object {
         fun fromString(string: String): ClientMessagePayload {
-            val playerResultObject = JSONObject(string).getJSONObject("playerResult")
-            val gameStateValue = JSONObject(string).getString("gameState")
-            
-            val playerResult = Gson().fromJson(playerResultObject.toString(), Result::class.java)
+            synchronized(this) {
+                var playerResultObject = JSONObject(string).getJSONObject("playerResult")
+                var gameStateValue = JSONObject(string).getString("gameState")
 
-            Log.e("fromString", "${MainMenuActivity.APP_EXECUTION_UUID} -> ${playerResult.player.uuid} ")
+                var boardPositionValue = try {
+                    JSONObject(string).getString("boardPosition")
+                } catch (e: JSONException) {
+                    Constants.BOARD_POSITION.NONE.toString()
+                }
+                Log.e("Cli FromMess", playerResultObject.toString())
 
-            return ClientMessagePayload(playerResult, GameState.valueOf(gameStateValue))
+                val playerResult = Gson().fromJson(playerResultObject.toString(), PlayerResult::class.java)
+
+                Log.e("Cli FromMess2", playerResult.player.uuid)
+                Log.e("Cli FromMess3", MainMenuActivity.APP_EXECUTION_UUID)
+
+                return ClientMessagePayload(playerResult, GameState.valueOf(gameStateValue), Constants.BOARD_POSITION.valueOf(boardPositionValue))
+            }
         }
     }
 }

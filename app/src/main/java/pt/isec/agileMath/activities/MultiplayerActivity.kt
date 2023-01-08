@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.snackbar.Snackbar
 import pt.isec.agileMath.R
 import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.databinding.ActivityMultiplayerBinding
@@ -36,8 +37,6 @@ class MultiplayerActivity : AppCompatActivity() {
         boardGridView = BoardGridView(this, viewModel)
 
         binding.frScore?.addView(fragmentScoreBinding.root)
-        // binding.frGameMatrix?.addView(boardGridView)
-        // binding.frPlayersList?.addView(ScoresRecyclerListView(this, arrayListOf()))
 
         fragmentNewLevelTransition.fabPauseToggle.setOnClickListener{ viewModel.togglePause() }
         viewModel.gameStateObserver.observe(this) {
@@ -68,18 +67,24 @@ class MultiplayerActivity : AppCompatActivity() {
         when(state) {
             GameState.START_AS_HOST -> {
                 viewModel.startServer()
+                refreshPlayersList()
+
                 Popups.serverPopup(this, { onStartGameAsServer() }, { onCancelServerGame() })
             }
-            GameState.START_AS_CLIENT ->
-                Popups.clientPopup(this, {  viewModel.connectToServer(it) }, {
+            GameState.START_AS_CLIENT -> {
+                refreshPlayersList()
+
+                Popups.clientPopup(this, { viewModel.connectToServer(it) }, {
                     finish()
                 })
-            GameState.REFRESH_PLAYERS_LIST -> binding.frPlayersList?.addView(
-                ScoresRecyclerListView(this, viewModel.playersConnected)
-            )
+            }
+            GameState.REFRESH_PLAYERS_LIST -> refreshPlayersList()
             GameState.CORRECT_EXPRESSION -> {
+                refreshBoard()
+                binding.imgOperationResult?.setBackgroundResource(R.drawable.ic_baseline_correct)
             }
             GameState.FAILED_EXPRESSION -> {
+                binding.imgOperationResult?.setBackgroundResource(R.drawable.ic_baseline_wrong)
             }
             GameState.LEVEL_COMPLETED -> {
             }
@@ -94,8 +99,11 @@ class MultiplayerActivity : AppCompatActivity() {
             GameState.GAME_OVER_TIME_OUT -> {
             }
             GameState.GAME_STARTED -> {
+                refreshBoard()
+                viewModel.startGame()
                 Popups.close()
             }
+            GameState.CLIENT_DISCONNECTED -> refreshPlayersList()
             GameState.CONNECTION_TO_SERVER_ESTABLISHED ->
                 Popups.waitingPopupSpinner(this, R.string.popup_waiting_game_to_start) { finish() }
             GameState.CONNECTION_TO_SERVER_ERROR -> {
@@ -113,12 +121,30 @@ class MultiplayerActivity : AppCompatActivity() {
     }
 
     private fun onStartGameAsServer() {
+        if (viewModel.playersMap.size >= 2) {
+            viewModel.setGameState(GameState.GAME_STARTED)
+            return
+        }
 
+        Toast.makeText(this, R.string.popup_min_players_required, Toast.LENGTH_LONG).show()
     }
 
     private fun onCancelServerGame() {
         viewModel.endGame()
         finish()
+    }
+
+    private fun refreshPlayersList() {
+        binding.frPlayersList?.removeAllViewsInLayout()
+        binding.frPlayersList?.addView(
+            ScoresRecyclerListView(this, viewModel.playersMap.values)
+        )
+    }
+
+    private fun refreshBoard() {
+        boardGridView = BoardGridView(this, viewModel)
+        binding.frGameMatrix?.removeAllViewsInLayout()
+        binding.frGameMatrix?.addView(boardGridView)
     }
 
     companion object {

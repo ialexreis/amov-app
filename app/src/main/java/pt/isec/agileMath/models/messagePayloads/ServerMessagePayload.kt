@@ -2,21 +2,23 @@ package pt.isec.agileMath.models.messagePayloads
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONArray
 import org.json.JSONObject
 import pt.isec.agileMath.constants.GameState
 import pt.isec.agileMath.models.Game
-import pt.isec.agileMath.models.Result
+import pt.isec.agileMath.models.MultiplayerPlayer
+import pt.isec.agileMath.models.PlayerResult
 
 class ServerMessagePayload: JsonParserInterface {
-    var game: Game
+    var clientGame: Game
         private set
-    var players: List<Result>
+    var players: MutableMap<String, MultiplayerPlayer>
         private set
     var gameState: GameState
         private set
 
-    constructor(game: Game, players: List<Result>, gameState: GameState) {
-        this.game = game
+    constructor(clientGame: Game, players: MutableMap<String, MultiplayerPlayer>, gameState: GameState) {
+        this.clientGame = clientGame
         this.players = players
         this.gameState = gameState
     }
@@ -25,16 +27,19 @@ class ServerMessagePayload: JsonParserInterface {
 
     companion object {
         fun fromString(string: String): ServerMessagePayload {
-            val gameObject = JSONObject(string).getJSONObject("game")
-            val playersArray = JSONObject(string).getJSONArray("players")
-            val gameStateValue = JSONObject(string).getString("gameState")
+            synchronized(this) {
+                var gameObject = JSONObject(string).getJSONObject("clientGame")
+                var playersArray = JSONObject(string).getJSONObject("players")
+                var gameStateValue = JSONObject(string).getString("gameState")
 
-            val game = Gson().fromJson(gameObject.toString(), Game::class.java)
 
-            val playersListType = object : TypeToken<List<Result>>() {}.type
-            val players = Gson().fromJson<List<Result>>(playersArray.toString(), playersListType)
+                val game = Gson().fromJson(gameObject.toString(), Game::class.java)
 
-            return ServerMessagePayload(game, players, GameState.valueOf(gameStateValue))
+                val playersListType = object : TypeToken<MutableMap<String, MultiplayerPlayer>>() {}.type
+                val players = Gson().fromJson<MutableMap<String, MultiplayerPlayer>>(playersArray.toString(), playersListType)
+
+                return ServerMessagePayload(game, players, GameState.valueOf(gameStateValue))
+            }
         }
     }
 }

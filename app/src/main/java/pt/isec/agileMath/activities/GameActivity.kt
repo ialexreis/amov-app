@@ -3,6 +3,7 @@ package pt.isec.agileMath.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -105,10 +106,14 @@ class GameActivity : AppCompatActivity() {
             }
             GameState.GAME_OVER_TIME_OUT -> {
                 // TODO handle game over and save the score in firebase
+                Toast.makeText(this, R.string.popup_game_over_store_points, Toast.LENGTH_SHORT).show()
+
                 runBlocking {
                     FirebaseService.save(Tables.SCORES.parent, singlePlayerViewModel.result)
                     singlePlayerViewModel.setGameState(GameState.GAME_OVER)
                 }
+
+                finish()
             }
             else -> {}
         }

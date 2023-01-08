@@ -1,18 +1,16 @@
 package pt.isec.agileMath.views
 
-import android.R
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pt.isec.agileMath.databinding.FragmentScoresListItemBinding
-import pt.isec.agileMath.models.Result
+import pt.isec.agileMath.models.MultiplayerPlayer
+import pt.isec.agileMath.models.PlayerResult
 
 
 class ScoresRecyclerListView@JvmOverloads constructor(
@@ -21,9 +19,9 @@ class ScoresRecyclerListView@JvmOverloads constructor(
     defStyleRes: Int = 0
 ): RecyclerView(context, attrs, defStyleRes) {
 
-    private lateinit var scoresResults: ArrayList<Result>
+    private lateinit var scoresResults: MutableCollection<MultiplayerPlayer>
 
-    constructor(context: Context, scoresResults: ArrayList<Result>) : this(context) {
+    constructor(context: Context, scoresResults: MutableCollection<MultiplayerPlayer>) : this(context) {
         val layoutManagerScores = LinearLayoutManager(context)
 
         layoutManagerScores.orientation = LinearLayoutManager.HORIZONTAL
@@ -36,7 +34,7 @@ class ScoresRecyclerListView@JvmOverloads constructor(
 
     private fun getListViewAdapter(): Adapter<ViewHolder> {
         return object : Adapter<ViewHolder>() {
-            fun getItem(position: Int): Result = scoresResults[position]
+            fun getItem(position: Int): PlayerResult = scoresResults.elementAt(position).playerDetails
 
             override fun getItemId(position: Int): Long = position.toLong()
 
