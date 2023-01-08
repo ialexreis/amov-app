@@ -43,4 +43,5 @@
 
     <string name="fragment_level_finish">Á espera que os jogadores terminem o seu nível antes de avançar para o próximo</string>
     <string name="fragment_game_over">O jogo terminou. Pode seguir o estado dos jogadores restantes na lista abaixo</string>
+    <string name="fragment_multiplayer_game_over">O jogo multijogador terminou</string>
 </resources>

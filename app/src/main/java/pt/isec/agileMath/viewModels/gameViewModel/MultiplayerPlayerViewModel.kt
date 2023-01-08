@@ -82,7 +82,10 @@ class MultiplayerPlayerViewModel: GameViewModel() {
         for (playerUUID in playersMap.keys) {
             val connection = playersConnectionMap[playerUUID] ?: continue
 
-            if (playersMap[playerUUID]?.lostGame == true && gameState != GameState.REFRESH_PLAYERS_LIST) { continue }
+            if (playersMap[playerUUID]?.lostGame == true
+                && gameState != GameState.REFRESH_PLAYERS_LIST
+                && gameState != GameState.GAME_OVER)
+            { continue }
 
             socketsService?.sendMessage(generateServerPayloadResponse(playerUUID, gameState), connection)
 
@@ -136,14 +139,14 @@ class MultiplayerPlayerViewModel: GameViewModel() {
             }
             GameState.VALIDATE_EXPRESSION -> {
                 var gameState = validateExpression(socketConnection, messagePayload)
-                replyToClients(GameState.REFRESH_PLAYERS_LIST)
-                setGameState(GameState.REFRESH_PLAYERS_LIST)
 
                 if (gameState == GameState.LEVEL_COMPLETED && isEveryLevelFinished()) {
                     setGameState(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
                     replyToClients(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
                 }
 
+                replyToClients(GameState.REFRESH_PLAYERS_LIST)
+                setGameState(GameState.REFRESH_PLAYERS_LIST)
             }
             else -> {}
         }
@@ -179,12 +182,13 @@ class MultiplayerPlayerViewModel: GameViewModel() {
         if (isHost) {
             var gameState = validateMyExpression(positionFromTouch)?: GameState.NONE
             setGameState(gameState)
-            replyToClients(GameState.REFRESH_PLAYERS_LIST)
 
             if (gameState == GameState.LEVEL_COMPLETED && isEveryLevelFinished()) {
                 setGameState(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
                 replyToClients(GameState.NEW_LEVEL_COUNTDOWN_STARTED)
             }
+
+            replyToClients(GameState.REFRESH_PLAYERS_LIST)
 
             return
         }
@@ -240,7 +244,7 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     }
 
     private fun runClock(): Boolean {
-
+        var everyPlayerLoosed = true
         var isSomeGameRunning = false
 
         for (playerUUID in playersMap.keys) {
@@ -251,13 +255,21 @@ class MultiplayerPlayerViewModel: GameViewModel() {
             if (player == null || playerGame == null || player.lostGame || player.isLevelFinished) {continue}
 
             if (playerGame.timer > 0) {
-                isSomeGameRunning = true
                 playerGame.clockTick()
+
+                isSomeGameRunning = true
+                everyPlayerLoosed = false
                 continue
             }
 
             player.lostGame = true
             player.isLevelFinished = true
+
+            if (everyPlayerLoosed) {
+                setGameState(GameState.GAME_OVER)
+                replyToClients(GameState.GAME_OVER)
+                continue
+            }
 
             if (playerUUID == MainMenuActivity.APP_EXECUTION_UUID) {
                 setGameState(GameState.GAME_OVER_TIME_OUT)

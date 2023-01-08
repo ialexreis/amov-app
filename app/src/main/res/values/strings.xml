@@ -43,4 +43,5 @@
 
     <string name="fragment_level_finish">Waiting players to finish their level, before init the new level</string>
     <string name="fragment_game_over">Game over. You can follow the remaining players progress above</string>
+    <string name="fragment_multiplayer_game_over">Multiplayer game ended.</string>
 </resources>

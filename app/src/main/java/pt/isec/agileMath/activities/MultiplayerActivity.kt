@@ -110,6 +110,7 @@ class MultiplayerActivity : AppCompatActivity() {
                 refreshPlayersList()
             }
             GameState.GAME_OVER_TIME_OUT -> setLayoutOnNewLevelTransition(state)
+            GameState.GAME_OVER -> setLayoutOnNewLevelTransition(state)
             GameState.CLIENT_DISCONNECTED, GameState.SOCKET_ERROR -> {
                 refreshPlayersList()
             }
@@ -182,6 +183,10 @@ class MultiplayerActivity : AppCompatActivity() {
             GameState.NEW_LEVEL_STARTED -> {
                 refreshBoard()
                 refreshPlayersList()
+            }
+            GameState.GAME_OVER -> {
+                Toast.makeText(this, R.string.fragment_multiplayer_game_over, Toast.LENGTH_LONG).show()
+                finish()
             }
             GameState.GAME_OVER_TIME_OUT -> {
                 val textView = TextView(this)
