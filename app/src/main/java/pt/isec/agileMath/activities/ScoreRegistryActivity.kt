@@ -11,7 +11,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import pt.isec.agileMath.adapters.ListAdapter
+import pt.isec.agileMath.activities.adapters.ListAdapter
 import pt.isec.agileMath.constants.Constants
 import pt.isec.agileMath.constants.ListType
 import pt.isec.agileMath.constants.Tables

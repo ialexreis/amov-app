@@ -1,4 +1,4 @@
-package pt.isec.agileMath.adapters
+package pt.isec.agileMath.activities.adapters
 
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
