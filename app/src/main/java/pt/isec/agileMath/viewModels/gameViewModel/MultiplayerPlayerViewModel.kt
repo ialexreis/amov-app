@@ -244,7 +244,6 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     }
 
     private fun runClock(): Boolean {
-        var everyPlayerLoosed = true
         var isSomeGameRunning = false
 
         for (playerUUID in playersMap.keys) {
@@ -258,14 +257,13 @@ class MultiplayerPlayerViewModel: GameViewModel() {
                 playerGame.clockTick()
 
                 isSomeGameRunning = true
-                everyPlayerLoosed = false
                 continue
             }
 
             player.lostGame = true
             player.isLevelFinished = true
 
-            if (everyPlayerLoosed) {
+            if (isEveryGameLoosed()) {
                 setGameState(GameState.GAME_OVER)
                 replyToClients(GameState.GAME_OVER)
                 continue
@@ -419,6 +417,16 @@ class MultiplayerPlayerViewModel: GameViewModel() {
     private fun isEveryLevelFinished(): Boolean {
         for (players in playersMap.values) {
             if (!players.isLevelFinished) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private fun isEveryGameLoosed(): Boolean {
+        for (players in playersMap.values) {
+            if (!players.lostGame) {
                 return false
             }
         }
