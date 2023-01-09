@@ -44,4 +44,11 @@
     <string name="fragment_level_finish">Á espera que os jogadores terminem o seu nível antes de avançar para o próximo</string>
     <string name="fragment_game_over">O jogo terminou. Pode seguir o estado dos jogadores restantes na lista abaixo</string>
     <string name="fragment_multiplayer_game_over">O jogo multijogador terminou</string>
+
+    <string name="instituto_superior_de_engenharia_de_coimbra">Instituto Superior de Engenharia de Coimbra</string>
+    <string name="ano_letivo_2022_2023">Ano Letivo 2022/2023</string>
+    <string name="unidade_curricular_de_arquiteturas_m_veis">Unidade Curricular de Arquiteturas Móveis</string>
+    <string name="nome_da_aplica_o">Nome da Aplicação</string>
+    <string name="desenvolvido_por">Desenvolvido Por:</string>
+    <string name="credits">Credits</string>
 </resources>
