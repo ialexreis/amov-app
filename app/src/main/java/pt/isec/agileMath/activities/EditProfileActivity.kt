@@ -4,15 +4,19 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.PermissionChecker
 import kotlinx.coroutines.runBlocking
 import pt.isec.agileMath.constants.Constants.Companion.PREFERENCE_NAME
 import pt.isec.agileMath.constants.Tables
@@ -20,7 +24,6 @@ import pt.isec.agileMath.databinding.ActivityEditProfileBinding
 import pt.isec.agileMath.models.Player
 import pt.isec.agileMath.services.FirebaseService
 import pt.isec.agileMath.services.Image64Utils
-import pt.isec.agileMath.services.PreferenceServices
 import pt.isec.agileMath.services.PreferenceServices.customPreference
 import pt.isec.agileMath.services.PreferenceServices.id
 import pt.isec.agileMath.services.PreferenceServices.nickname
@@ -30,11 +33,12 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class EditProfileActivity : AppCompatActivity() {
 
     companion object {
         private const val FILE_NAME = "avatar_"
-        private const val REQUEST_CODE = 42
+        private const val REQUEST_CODE = 100
 
         fun getIntent(ctx: Context): Intent {
             return Intent(ctx, EditProfileActivity::class.java)
@@ -51,17 +55,25 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var file: File
     lateinit var currentPhotoPath: String
 
-    var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+    private var cameraPermissions = PermissionChecker.PERMISSION_DENIED
+
+    private var cameraActivityResultLauncherContract = registerForActivityResult(StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val takenImage = BitmapFactory.decodeFile(file.absolutePath)
             binding.imageView.setImageBitmap(takenImage)
         }
     }
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        cameraPermissions = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
 
         val prefs = customPreference(this, PREFERENCE_NAME)
 
@@ -74,13 +86,43 @@ class EditProfileActivity : AppCompatActivity() {
             binding.imageView.setImageBitmap(takenImage)
         }
 
-        binding.btnTakePicture.setOnClickListener { takePicture() }
+        binding.btnTakePicture.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PermissionChecker.PERMISSION_GRANTED) {
+                takePicture()
+                return@setOnClickListener
+            }
+            requestPermissions()
+        }
         binding.saveProfile.setOnClickListener { onSave() }
+
+        requestPermissions()
     }
 
-    fun openActivityForResult() {
-        resultLauncher.launch(getIntent(this))
+    private fun requestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PermissionChecker.PERMISSION_GRANTED) {
+            return
+        }
+
+        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        super.onRequestPermissionsResult(requestCode, permissions!!, grantResults)
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
 
     @SuppressLint("QueryPermissionsNeeded")
     private fun takePicture(){
@@ -139,7 +181,6 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("QueryPermissionsNeeded")
     private fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
@@ -155,8 +196,8 @@ class EditProfileActivity : AppCompatActivity() {
                     val photoURI: Uri = FileProvider.getUriForFile(applicationContext, "pt.isec.agileMath.fileprovider", it)
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
 
-                    @Suppress("DEPRECATION")
-                    startActivityForResult(takePictureIntent, REQUEST_CODE)
+                    cameraActivityResultLauncherContract.launch(takePictureIntent)
+                    // startActivityForResult(takePictureIntent, REQUEST_CODE)
                 }
             }
         }
