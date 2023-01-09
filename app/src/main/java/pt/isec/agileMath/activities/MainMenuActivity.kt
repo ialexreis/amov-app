@@ -18,12 +18,14 @@ class MainMenuActivity : AppCompatActivity() {
         binding.btnSinglePlayer.setOnClickListener { onSinglePlayer() }
         binding.btnMultiplayer.setOnClickListener { onMultiplayer() }
         binding.btnOptions.setOnClickListener { onOptions() }
+        binding.btnCredits.setOnClickListener { onCredits() }
 
     }
 
     fun onOptions() = startActivity(OptionsActivity.getIntent(this))
     fun onSinglePlayer() = startActivity(GameActivity.getIntent(this))
     fun onMultiplayer() = startActivity(ModeActivity.getIntent(this))
+    fun onCredits() = startActivity(CreditsActivity.getIntent(this))
 
     companion object {
         val APP_EXECUTION_UUID = UUID.randomUUID().toString()

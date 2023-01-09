@@ -44,4 +44,10 @@
     <string name="fragment_level_finish">Waiting players to finish their level, before init the new level</string>
     <string name="fragment_game_over">Game over. You can follow the remaining players progress above</string>
     <string name="fragment_multiplayer_game_over">Multiplayer game ended.</string>
+    <string name="instituto_superior_de_engenharia_de_coimbra">Instituto Superior de Engenharia de Coimbra</string>
+    <string name="ano_letivo_2022_2023">Ano Letivo 2022/2023</string>
+    <string name="unidade_curricular_de_arquiteturas_m_veis">Unidade Curricular de Arquiteturas Móveis</string>
+    <string name="nome_da_aplica_o">Nome da Aplicação</string>
+    <string name="desenvolvido_por">Desenvolvido Por:</string>
+    <string name="credits">Credits</string>
 </resources>
